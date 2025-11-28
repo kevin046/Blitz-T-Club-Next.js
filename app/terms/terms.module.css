@@ -1,0 +1,116 @@
+.termsPage {
+    min-height: 100vh;
+    background: var(--color-background-gray);
+    padding-top: 80px;
+    padding-bottom: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.termsPage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(232, 33, 39, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.05) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.header {
+    background: var(--gradient-dark);
+    color: var(--color-text-light);
+    padding: 80px 20px 60px;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 1;
+}
+
+.header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.header p {
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0;
+}
+
+.content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.section {
+    background: var(--color-background-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--color-border-light);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .section {
+        background: rgba(30, 30, 30, 0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+}
+
+.section h2 {
+    font-size: 1.6rem;
+    color: var(--color-text-primary);
+    margin-bottom: 1.2rem;
+    font-weight: 700;
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 0.8rem;
+}
+
+.section p {
+    color: var(--color-text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.section ul {
+    margin: 0 0 1rem 1.5rem;
+    color: var(--color-text-secondary);
+}
+
+.section li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.contactInfo {
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2.2rem;
+    }
+
+    .section {
+        padding: 1.5rem;
+    }
+
+    .section h2 {
+        font-size: 1.4rem;
+    }
+}

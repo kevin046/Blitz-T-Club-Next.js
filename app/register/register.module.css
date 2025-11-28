@@ -1,0 +1,302 @@
+.registerPage {
+    background: var(--gradient-dark);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 20px 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.registerPage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(232, 33, 39, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.registerContainer {
+    width: 100%;
+    max-width: 800px;
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.registerBox {
+    background: var(--color-background-card);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+    box-shadow: var(--shadow-2xl);
+    border: 1px solid var(--color-border);
+}
+
+.registerHeader {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.registerLogo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
+}
+
+.registerHeader h2 {
+    color: var(--color-text-primary);
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+}
+
+.registerHeader p {
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.registerForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 10px;
+    margin-top: 10px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.formGroup label {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.formGroup input[type="text"],
+.formGroup input[type="email"],
+.formGroup input[type="tel"],
+.formGroup input[type="date"],
+.formGroup input[type="password"] {
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 16px;
+    transition: all 0.3s ease;
+    width: 100%;
+    background: var(--color-background);
+    color: var(--color-text-primary);
+}
+
+.formGroup input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(232, 33, 39, 0.1);
+}
+
+.checkboxGroup {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    background: var(--color-background-gray);
+    padding: 15px;
+    border-radius: var(--radius-md);
+}
+
+.checkboxOption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkboxOption input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.checkboxOption label {
+    margin: 0;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--color-text-primary);
+}
+
+.passwordWrapper {
+    position: relative;
+}
+
+.passwordToggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.passwordToggle:hover {
+    color: var(--color-text-primary);
+}
+
+.termsCheckbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.termsCheckbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.termsCheckbox label {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+}
+
+.termsCheckbox a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.termsCheckbox a:hover {
+    text-decoration: underline;
+}
+
+.registerBtn {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: var(--radius-full);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    box-shadow: var(--shadow-glow);
+}
+
+.registerBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(232, 33, 39, 0.4);
+}
+
+.registerBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.formFooter {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+}
+
+.formFooter a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.formFooter a:hover {
+    text-decoration: underline;
+}
+
+.formError {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-error);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    margin-bottom: 20px;
+}
+
+.mb2 {
+    margin-bottom: 10px;
+}
+
+.mt2 {
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .registerPage {
+        padding: 100px 16px 30px;
+    }
+
+    .registerBox {
+        padding: 20px;
+    }
+
+    .row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .checkboxGroup {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animation Keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,224 @@
+.faqPage {
+    min-height: 100vh;
+    background: var(--color-background-gray);
+    padding-top: 0;
+}
+
+.hero {
+    background: var(--gradient-dark);
+    color: var(--color-text-light);
+    padding: 120px 20px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(232, 33, 39, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    z-index: 1;
+}
+
+.container {
+    max-width: 900px;
+    margin: -40px auto 0;
+    padding: 0 2rem 4rem;
+    position: relative;
+    z-index: 2;
+}
+
+.section {
+    background: var(--color-background-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--color-border-light);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .section {
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+}
+
+.section h2 {
+    font-size: 1.8rem;
+    color: var(--color-text-primary);
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon {
+    color: var(--color-primary);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.item {
+    border-bottom: 1px solid var(--color-border-light);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.question {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+
+.question:hover {
+    color: var(--color-primary);
+}
+
+.question svg {
+    font-size: 1rem;
+    color: var(--color-primary);
+    transition: transform 0.3s ease;
+}
+
+.answer {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-out;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    font-size: 1.05rem;
+}
+
+.answer.open {
+    grid-template-rows: 1fr;
+    margin-top: 0.8rem;
+}
+
+.answer p {
+    overflow: hidden;
+    margin: 0;
+}
+
+.contactSection {
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: var(--radius-xl);
+    padding: 3rem;
+    text-align: center;
+    margin-top: 3rem;
+    box-shadow: var(--shadow-glow);
+    position: relative;
+    overflow: hidden;
+}
+
+.contactSection::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+    pointer-events: none;
+}
+
+.contactSection h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    color: white;
+}
+
+.contactSection p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.contactBtn {
+    display: inline-block;
+    background: white;
+    color: var(--color-primary);
+    padding: 1rem 2.5rem;
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.contactBtn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    background: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .container {
+        padding: 0 1rem 3rem;
+    }
+
+    .section {
+        padding: 1.5rem;
+    }
+
+    .question {
+        font-size: 1.1rem;
+    }
+
+    .contactSection {
+        padding: 2rem 1.5rem;
+    }
+}

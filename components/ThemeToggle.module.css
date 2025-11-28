@@ -1,0 +1,29 @@
+.toggleBtn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.toggleBtn:hover {
+    background-color: var(--color-background-gray);
+    color: var(--color-primary);
+    transform: rotate(15deg);
+}
+
+/* Ensure visibility in dark mode */
+[data-theme='dark'] .toggleBtn {
+    color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .toggleBtn:hover {
+    color: var(--color-warning);
+    /* Sun color on hover */
+}

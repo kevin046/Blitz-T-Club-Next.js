@@ -1,0 +1,217 @@
+/* ===================================
+   HERO SECTION STYLES
+   =================================== */
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: var(--spacing-3xl) var(--spacing-xl);
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+/* Hero Logo */
+.hero-logo {
+    max-width: 200px;
+    width: 100%;
+    margin: 0 auto var(--spacing-3xl);
+    animation: fadeInScale 0.8s ease-out;
+    opacity: 0.95;
+}
+
+.hero-logo img {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
+}
+
+/* Hero Tagline */
+.hero-tagline {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: var(--spacing-3xl);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+    text-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        0 8px 24px rgba(0, 0, 0, 0.4);
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-tagline span {
+    display: inline-block;
+    background: linear-gradient(135deg, #E82127 0%, #00D4FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 8px rgba(232, 33, 39, 0.5));
+}
+
+/* CTA Buttons */
+.cta-buttons {
+    display: flex;
+    gap: var(--spacing-lg);
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+    margin-top: var(--spacing-xl);
+}
+
+.btn {
+    padding: 16px 48px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 200px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+}
+
+/* Primary button - Tesla style */
+.btn:not(.btn-outline) {
+    background: rgba(23, 26, 32, 0.85);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn:not(.btn-outline):hover {
+    background: rgba(23, 26, 32, 0.95);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Outline button */
+.btn-outline {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: var(--spacing-3xl);
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.8rem;
+    animation: float 2s ease-in-out infinite;
+    cursor: pointer;
+    transition: color var(--transition-base);
+}
+
+.scroll-indicator:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+/* Animations */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 0.95;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(-50%, 0);
+    }
+
+    50% {
+        transform: translate(-50%, -10px);
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .hero {
+        padding: var(--spacing-2xl) var(--spacing-md);
+        padding-top: calc(80px + var(--spacing-2xl) + env(safe-area-inset-top));
+    }
+
+    .hero-logo {
+        max-width: 150px;
+        margin-bottom: var(--spacing-2xl);
+    }
+
+    .hero-tagline {
+        margin-bottom: var(--spacing-2xl);
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+        gap: var(--spacing-md);
+    }
+
+    .btn {
+        width: 100%;
+        padding: 14px 32px;
+    }
+
+    .scroll-indicator {
+        bottom: var(--spacing-2xl);
+        font-size: 1.5rem;
+    }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero-logo {
+        max-width: 180px;
+    }
+
+    .cta-buttons {
+        gap: var(--spacing-md);
+    }
+}

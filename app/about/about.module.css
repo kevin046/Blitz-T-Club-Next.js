@@ -1,0 +1,230 @@
+.aboutPage {
+    background: var(--color-background);
+    min-height: 100vh;
+    padding-top: 80px;
+}
+
+.aboutContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.aboutHeader {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding: 3rem 0;
+    position: relative;
+}
+
+.aboutHeader h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.aboutHeader p {
+    font-size: 1.5rem;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+}
+
+.missionSection {
+    background: var(--color-background-card);
+    border-radius: var(--radius-xl);
+    padding: 4rem;
+    margin-bottom: 4rem;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    border: 1px solid var(--color-border-light);
+}
+
+.missionContent h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+}
+
+.missionContent p {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.journeySection {
+    margin-bottom: 4rem;
+}
+
+.journeySection h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.timeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.milestone {
+    background: var(--color-background-card);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-light);
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.milestone:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+}
+
+.milestone h3 {
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+.milestone p {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.valuesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.valueCard {
+    background: var(--color-background-card);
+    padding: 2.5rem;
+    border-radius: var(--radius-xl);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    border: 1px solid var(--color-border-light);
+}
+
+.valueCard:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+.valueCard svg {
+    font-size: 3rem;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+}
+
+.valueCard h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-text-primary);
+}
+
+.valueCard p {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.impactSection {
+    margin-bottom: 4rem;
+    text-align: center;
+}
+
+.impactSection h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.impactStats {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+}
+
+.statCard {
+    text-align: center;
+}
+
+.statNumber {
+    display: block;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.statLabel {
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.joinSection {
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl);
+    padding: 4rem;
+    text-align: center;
+    color: white;
+    box-shadow: var(--shadow-glow);
+}
+
+.joinSection h2 {
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.joinSection p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.joinBtn {
+    background: white;
+    color: var(--color-primary);
+    padding: 1rem 2.5rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.joinBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .aboutHeader h1 {
+        font-size: 2.5rem;
+    }
+
+    .missionSection {
+        padding: 2rem;
+    }
+
+    .impactStats {
+        gap: 2rem;
+    }
+
+    .statNumber {
+        font-size: 2.5rem;
+    }
+}

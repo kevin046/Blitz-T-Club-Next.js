@@ -1,0 +1,314 @@
+.adminShop {
+    padding: 40px;
+    background: #f4f6f9;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.headerLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    color: #586069;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    padding: 0;
+}
+
+.backBtn:hover {
+    color: #0366d6;
+}
+
+.header h1 {
+    margin: 0;
+    color: #171a20;
+}
+
+.primaryBtn {
+    background: #00e676;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.primaryBtn:hover {
+    background: #00c853;
+}
+
+.controls {
+    margin-bottom: 24px;
+}
+
+.searchBox {
+    position: relative;
+    max-width: 400px;
+}
+
+.searchBox input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #e1e4e8;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.searchBox svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #586069;
+}
+
+.productsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.productCard {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.productCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.productImage {
+    height: 200px;
+    background: #f8f9fa;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.productImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.placeholderImage {
+    font-size: 3rem;
+    color: #cbd5e0;
+}
+
+.statusBadge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    backdrop-filter: blur(4px);
+}
+
+.statusBadge[data-status="published"] {
+    background: rgba(0, 230, 118, 0.9);
+}
+
+.productInfo {
+    padding: 20px;
+}
+
+.productInfo h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.1rem;
+    color: #171a20;
+}
+
+.priceRow {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.memberPrice {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #00e676;
+}
+
+.regularPrice {
+    font-size: 0.9rem;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.inventory {
+    font-size: 0.9rem;
+    color: #586069;
+    margin-bottom: 16px;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.editBtn,
+.deleteBtn {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.editBtn {
+    background: #f0f9ff;
+    color: #0366d6;
+}
+
+.editBtn:hover {
+    background: #e1f0fa;
+}
+
+.deleteBtn {
+    background: #fff5f5;
+    color: #e53e3e;
+    flex: 0 0 40px;
+}
+
+.deleteBtn:hover {
+    background: #ffe3e3;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    padding: 32px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+.formGroup {
+    margin-bottom: 16px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+.formGroup input,
+.formGroup select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkboxLabel input {
+    width: auto;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.cancelBtn {
+    background: #f1f3f5;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.saveBtn {
+    background: #00e676;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.2rem;
+    color: #586069;
+}
