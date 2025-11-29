@@ -3,17 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaHome, FaCalendar, FaImages, FaGift, FaEnvelope, FaInfoCircle, FaUserPlus, FaSignInAlt, FaTachometerAlt, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
-import ThemeToggle from './ThemeToggle';
-import { useTheme } from '@/contexts/ThemeContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { FaHome, FaCalendar, FaImages, FaGift, FaEnvelope, FaInfoCircle, FaUserPlus, FaSignInAlt, FaBars, FaTimes } from 'react-icons/fa';
 
 export default function Navigation() {
     const [isOpen, setIsOpen] = useState(false);
-    const { user, signOut } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
-    const { theme } = useTheme();
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -25,32 +20,17 @@ export default function Navigation() {
         document.body.classList.remove('nav-open');
     };
 
-    const handleLogout = async () => {
-        await signOut();
-        router.push('/login');
-        closeMenu();
-    };
-
-    const navItems = user
-        ? [
-            { href: '/', icon: FaHome, label: '', iconOnly: true },
-            { href: '/dashboard', icon: FaTachometerAlt, label: 'Dashboard' },
-            { href: '/events', icon: FaCalendar, label: 'Events' },
-            { href: '/gallery', icon: FaImages, label: 'Gallery' },
-            { href: '/member-benefits', icon: FaGift, label: 'Member Benefits' },
-            { href: '/contact', icon: FaEnvelope, label: 'Contact' },
-            { href: '/about', icon: FaInfoCircle, label: 'About Us' },
-        ]
-        : [
-            { href: '/', icon: FaHome, label: '', iconOnly: true },
-            { href: '/events', icon: FaCalendar, label: 'Events' },
-            { href: '/gallery', icon: FaImages, label: 'Gallery' },
-            { href: '/member-benefits', icon: FaGift, label: 'Member Benefits' },
-            { href: '/contact', icon: FaEnvelope, label: 'Contact' },
-            { href: '/about', icon: FaInfoCircle, label: 'About Us' },
-            { href: '/register', icon: FaUserPlus, label: 'Join Us' },
-            { href: '/login', icon: FaSignInAlt, label: 'Login' },
-        ];
+    // Simplified navigation without auth dependency
+    const navItems = [
+        { href: '/', icon: FaHome, label: '', iconOnly: true },
+        { href: '/events', icon: FaCalendar, label: 'Events' },
+        { href: '/gallery', icon: FaImages, label: 'Gallery' },
+        { href: '/member-benefits', icon: FaGift, label: 'Member Benefits' },
+        { href: '/contact', icon: FaEnvelope, label: 'Contact' },
+        { href: '/about', icon: FaInfoCircle, label: 'About Us' },
+        { href: '/register', icon: FaUserPlus, label: 'Join Us' },
+        { href: '/login', icon: FaSignInAlt, label: 'Login' },
+    ];
 
     if (pathname === '/blitz-shop') return null;
 
@@ -63,7 +43,6 @@ export default function Navigation() {
                         alt="Blitz Tesla Club Logo"
                         width="50"
                         height="50"
-                        style={{ filter: theme === 'light' ? 'invert(1)' : 'none' }}
                         suppressHydrationWarning
                     />
                     <span>BLITZ T CLUB</span>
@@ -96,30 +75,7 @@ export default function Navigation() {
                         </Link>
                     </li>
                 ))}
-                {user && (
-                    <li>
-                        <button
-                            onClick={handleLogout}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                color: 'inherit',
-                                font: 'inherit',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                padding: '0.5rem 1rem',
-                                width: '100%'
-                            }}
-                        >
-                            <FaSignOutAlt /> Logout
-                        </button>
-                    </li>
-                )}
-                <li>
-                    <ThemeToggle />
-                </li>
+                {/* Removed logout button and theme toggle temporarily */}
             </ul>
         </nav>
     );
