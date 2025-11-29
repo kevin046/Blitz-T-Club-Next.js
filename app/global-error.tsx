@@ -10,7 +10,6 @@ export default function GlobalError({
     return (
         <html>
             <body>
-                {/* COMPLETELY REMOVED Providers wrapper */}
                 <div style={{ 
                     padding: '20px', 
                     textAlign: 'center', 
@@ -19,11 +18,9 @@ export default function GlobalError({
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    minHeight: '100vh',
-                    backgroundColor: '#f5f5f5'
+                    minHeight: '100vh'
                 }}>
                     <h2 style={{ color: '#d32f2f', marginBottom: '16px' }}>Something went wrong!</h2>
-                    <p style={{ marginBottom: '24px', color: '#666' }}>{error.message}</p>
                     <button
                         onClick={() => reset()}
                         style={{
@@ -33,8 +30,7 @@ export default function GlobalError({
                             backgroundColor: '#1976d2',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '4px',
-                            fontSize: '16px'
+                            borderRadius: '4px'
                         }}
                     >
                         Try again
