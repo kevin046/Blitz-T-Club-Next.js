@@ -6,8 +6,7 @@ import "./hero.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import JotformAI from "@/components/JotformAI";
-import { AuthProvider } from '@/contexts/AuthContext';
-import { ThemeProvider } from '@/contexts/ThemeContext';
+import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
   title: "Blitz T Club - Tesla Enthusiasts Community",
@@ -38,14 +37,12 @@ export default function RootLayout({
         <link key="fonts-stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
       </head>
       <body>
-        <ThemeProvider>
-          <AuthProvider>
-            <Navigation />
-            {children}
-            <Footer />
-            <JotformAI />
-          </AuthProvider>
-        </ThemeProvider>
+        <Providers>
+          <Navigation />
+          {children}
+          <Footer />
+          <JotformAI />
+        </Providers>
       </body>
     </html>
   );
