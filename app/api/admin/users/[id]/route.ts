@@ -8,8 +8,9 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function PATCH(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    props: { params: Promise<{ id: string }> }
 ) {
+    const params = await props.params;
     try {
         // Verify authentication
         const authHeader = request.headers.get('Authorization');
@@ -56,7 +57,7 @@ export async function PATCH(
         };
 
         // Remove undefined keys
-        Object.keys(updateData).forEach(key => 
+        Object.keys(updateData).forEach(key =>
             (updateData as any)[key] === undefined && delete (updateData as any)[key]
         );
 
