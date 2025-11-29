@@ -33,15 +33,15 @@ export default function RootLayout({
       <head>
         <link key="fontawesome" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
         <link key="fonts-preconnect" rel="preconnect" href="https://fonts.googleapis.com" />
-        <link key="fonts-gstatic" rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link key="fonts-gstatic" rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link key="fonts-stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
       </head>
       <body>
         <Providers>
-        <Navigation />
-        {children}
-        <Footer />
-        {/* <JotformAI /> */}
+          <Navigation />
+          {children}
+          <Footer />
+          {/* <JotformAI /> */}
         </Providers>
       </body>
     </html>
