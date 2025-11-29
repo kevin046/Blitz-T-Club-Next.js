@@ -37,12 +37,12 @@ export default function RootLayout({
         <link key="fonts-stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
       </head>
       <body>
-        {/* <Providers> */}
-        {/* <Navigation /> */}
+        <Providers>
+        <Navigation />
         {children}
-        {/* <Footer /> */}
+        <Footer />
         {/* <JotformAI /> */}
-        {/* </Providers> */}
+        </Providers>
       </body>
     </html>
   );
