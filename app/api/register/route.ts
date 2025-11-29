@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { sendEmail } from '@/lib/email';
 
 // Initialize Supabase Admin client for server-side operations
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
@@ -16,6 +16,7 @@ const generateVerificationToken = () => {
 
 export async function POST(request: Request) {
     try {
+        const supabaseAdmin = getSupabaseAdmin();
         const { email, password, fullName, username } = await request.json();
         const verificationToken = generateVerificationToken();
 

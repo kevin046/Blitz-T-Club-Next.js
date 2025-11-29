@@ -1,28 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Log environment check (remove after debugging)
-console.log('[Admin Users API] Environment check:', {
-    hasUrl: !!supabaseUrl,
-    hasServiceKey: !!supabaseServiceKey,
-    urlValue: supabaseUrl?.substring(0, 20) + '...',
-});
-
-if (!supabaseUrl || !supabaseServiceKey) {
-    console.error('[Admin Users API] CRITICAL: Missing environment variables!', {
-        NEXT_PUBLIC_SUPABASE_URL: !!supabaseUrl,
-        SUPABASE_SERVICE_ROLE_KEY: !!supabaseServiceKey,
-    });
-}
-
 // Create Supabase client with service role key
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+const getSupabaseAdmin = () => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    return createClient(supabaseUrl, supabaseServiceKey);
+};
 
 export async function GET(request: NextRequest) {
     try {
+        const supabaseAdmin = getSupabaseAdmin();
         console.log('[Admin Users API] Received request');
 
         // Verify authentication

@@ -3,11 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
 // Create Supabase client with service role key
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const getSupabase = () => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    return createClient(supabaseUrl, supabaseServiceKey);
+};
 
 // Email configuration
 const transporter = nodemailer.createTransport({
@@ -29,6 +30,7 @@ const generateVerificationToken = () => {
 
 export async function POST(request: NextRequest) {
     try {
+        const supabase = getSupabase();
         const { userId, email } = await request.json();
 
         if (!userId || !email) {
