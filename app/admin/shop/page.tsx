@@ -19,8 +19,13 @@ interface Product {
     image_url?: string;
 }
 
+import { useAuth } from '@/contexts/AuthContext';
+
+// ... imports ...
+
 export default function AdminShop() {
     const router = useRouter();
+    const { user, profile, loading: authLoading, isAdmin } = useAuth();
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
@@ -29,31 +34,23 @@ export default function AdminShop() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        const initAdmin = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push('/login');
-                return;
-            }
+        if (authLoading) return;
 
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', user.id)
-                .single();
+        if (!user) {
+            router.push('/login');
+            return;
+        }
 
-            if (!profile || profile.role !== 'admin') {
-                alert('Access denied. Admin privileges required.');
-                router.push('/dashboard');
-                return;
-            }
+        if (!isAdmin) {
+            // alert('Access denied. Admin privileges required.');
+            router.push('/dashboard');
+            return;
+        }
 
-            fetchProducts();
-            setLoading(false);
-        };
+        fetchProducts().then(() => setLoading(false));
+    }, [user, isAdmin, authLoading, router]);
 
-        initAdmin();
-    }, [supabase, router]);
+    // Remove initAdmin and its call
 
     const fetchProducts = async () => {
         const { data } = await supabase

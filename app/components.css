@@ -11,9 +11,10 @@ nav {
     left: 0;
     right: 0;
     width: 100%;
+    height: 80px;
     background: var(--gradient-dark);
     backdrop-filter: blur(10px);
-    padding: var(--spacing-md) var(--spacing-xl);
+    padding: 0 var(--spacing-xl);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -118,6 +119,7 @@ nav {
 @media (max-width: 768px) {
     nav {
         padding: var(--spacing-sm) var(--spacing-md);
+        height: auto;
     }
 
     .logo img {

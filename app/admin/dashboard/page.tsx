@@ -4,8 +4,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
-import { FaTachometerAlt, FaUsersCog, FaCalendarAlt, FaFileAlt, FaCogs, FaUsers, FaCalendarCheck, FaUserPlus, FaUserCheck, FaUserClock, FaUserSlash, FaFileExport, FaQrcode, FaCalendarDay, FaCar, FaIdCard, FaEnvelope, FaSearch, FaPlus, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsersCog, FaCalendarAlt, FaFileAlt, FaCogs, FaUsers, FaCalendarCheck, FaUserPlus, FaUserCheck, FaUserClock, FaUserSlash, FaFileExport, FaQrcode, FaCalendarDay, FaCar, FaIdCard, FaEnvelope, FaSearch, FaPlus, FaEdit, FaTrash, FaCheck, FaTimes, FaBoxOpen, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import styles from './admin-dashboard.module.css';
+import EditUserModal from './EditUserModal';
 
 // Types
 interface Profile {
@@ -17,6 +18,13 @@ interface Profile {
     role: string;
     created_at: string;
     phone?: string;
+    date_of_birth?: string;
+    dob?: string;
+    full_address?: string;
+    address?: string;
+    car_model?: string;
+    car_models?: string;
+    vehicle_model?: string;
 }
 
 interface Event {
@@ -35,8 +43,13 @@ interface Registration {
     waiver_signed?: boolean;
 }
 
+import { useAuth } from '@/contexts/AuthContext';
+
+// ... imports ...
+
 export default function AdminDashboard() {
     const router = useRouter();
+    const { user, profile, loading: authLoading, isAdmin } = useAuth();
 
     const [loading, setLoading] = useState(true);
     const [activeSection, setActiveSection] = useState('overview');
@@ -59,126 +72,75 @@ export default function AdminDashboard() {
     const [eventSearch, setEventSearch] = useState('');
     const [eventFilter, setEventFilter] = useState('all');
     const [registrationStatusFilter, setRegistrationStatusFilter] = useState('active');
+    const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'created_at', direction: 'desc' });
+    const [editingUser, setEditingUser] = useState<Profile | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
-        const initAdmin = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push('/login');
-                return;
+        if (authLoading) return;
+
+        if (!user) {
+            router.push('/login');
+            return;
+        }
+
+        if (!isAdmin) {
+            // alert('Access denied. Admin privileges required.'); // Better to redirect without alert or show unauthorized page
+            router.push('/dashboard');
+            return;
+        }
+
+        loadDashboardData().then(() => setLoading(false));
+    }, [user, isAdmin, authLoading, router]);
+
+    // Remove initAdmin and its call
+
+
+    const fetchWithAuth = async (url: string) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error('No session');
+
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${session.access_token}`
             }
+        });
 
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', user.id)
-                .single();
-
-            if (!profile || profile.role !== 'admin') {
-                alert('Access denied. Admin privileges required.');
-                router.push('/dashboard');
-                return;
-            }
-
-            await loadDashboardData();
-            setLoading(false);
-        };
-
-        initAdmin();
-    }, [supabase, router]);
+        if (!response.ok) throw new Error('Failed to fetch data');
+        return response.json();
+    };
 
     const loadDashboardData = async () => {
-        await Promise.all([
-            fetchStats(),
-            fetchRecentActivity(),
-            fetchUsers(),
-            fetchEvents(),
-            fetchRegistrations()
-        ]);
+        try {
+            await Promise.all([
+                fetchDashboardStats(),
+                fetchUsers(),
+                fetchEvents(),
+                fetchRegistrations()
+            ]);
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+        }
     };
 
-    const fetchStats = async () => {
-        // 1. Total Users (Highest Member ID)
-        const { data: profiles } = await supabase
-            .from('profiles')
-            .select('member_id')
-            .not('member_id', 'is', null);
-
-        let highestMemberNumber = 0;
-        profiles?.forEach(p => {
-            if (p.member_id?.startsWith('BTC')) {
-                const num = parseInt(p.member_id.replace('BTC', ''), 10);
-                if (!isNaN(num) && num > highestMemberNumber) highestMemberNumber = num;
-            }
-        });
-
-        // 2. Status Breakdown
-        const { data: statusCounts } = await supabase
-            .from('profiles')
-            .select('membership_status');
-
-        let active = 0, pending = 0, suspended = 0;
-        statusCounts?.forEach(p => {
-            if (p.membership_status === 'active') active++;
-            else if (['pending', 'pending_verification'].includes(p.membership_status)) pending++;
-            else if (p.membership_status === 'suspended') suspended++;
-        });
-
-        // 3. Events
-        const { data: eventsData } = await supabase.from('events').select('date');
-        const upcoming = eventsData?.filter(e => new Date(e.date) > new Date()).length || 0;
-
-        // 4. Recent Registrations
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        const { count: recentRegs } = await supabase
-            .from('event_registrations')
-            .select('id', { count: 'exact' })
-            .gt('registered_at', thirtyDaysAgo.toISOString())
-            .is('cancelled_at', null);
-
-        setStats({
-            totalUsers: highestMemberNumber,
-            activeEvents: upcoming,
-            totalEvents: eventsData?.length || 0,
-            recentRegistrations: recentRegs || 0,
-            activeUsers: active,
-            pendingUsers: pending,
-            suspendedUsers: suspended,
-        });
-    };
-
-    const fetchRecentActivity = async () => {
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-        const { data: members } = await supabase
-            .from('profiles')
-            .select('*')
-            .gte('created_at', sevenDaysAgo.toISOString())
-            .order('created_at', { ascending: false })
-            .limit(5);
-        setRecentMembers(members || []);
-
-        const threeDaysAgo = new Date();
-        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-
-        const { data: regs } = await supabase
-            .from('event_registrations')
-            .select('*, profiles(full_name, member_id), events(title)')
-            .gte('registered_at', threeDaysAgo.toISOString())
-            .is('cancelled_at', null)
-            .order('registered_at', { ascending: false })
-            .limit(5);
-        setRecentRegistrations(regs || []);
+    const fetchDashboardStats = async () => {
+        try {
+            const data = await fetchWithAuth('/api/admin/dashboard-stats');
+            setStats(data.stats);
+            setRecentMembers(data.recentMembers);
+            setRecentRegistrations(data.recentRegistrations);
+        } catch (error) {
+            console.error('Error fetching dashboard stats:', error);
+        }
     };
 
     const fetchUsers = async () => {
-        const { data } = await supabase
-            .from('profiles')
-            .select('*')
-            .order('created_at', { ascending: false });
-        setUsers(data || []);
+        try {
+            const data = await fetchWithAuth('/api/admin/users');
+            setUsers(data || []);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
     };
 
     const fetchEvents = async () => {
@@ -190,11 +152,69 @@ export default function AdminDashboard() {
     };
 
     const fetchRegistrations = async () => {
-        const { data } = await supabase
-            .from('event_registrations')
-            .select('*, profiles(full_name, email, member_id, phone), events(title)')
-            .order('registered_at', { ascending: false });
-        setRegistrations(data || []);
+        try {
+            const data = await fetchWithAuth('/api/admin/registrations');
+            setRegistrations(data || []);
+        } catch (error) {
+            console.error('Error fetching registrations:', error);
+        }
+    };
+
+    const formatDateEst = (dateString: string | undefined) => {
+        if (!dateString) return '-';
+        // If it's a full ISO string with time, use EST timezone
+        if (dateString.includes('T')) {
+            return new Date(dateString).toLocaleDateString('en-US', { timeZone: 'America/New_York' });
+        }
+        // If it's just a date (YYYY-MM-DD), treat as UTC to prevent day shifting
+        return new Date(dateString).toLocaleDateString('en-US', { timeZone: 'UTC' });
+    };
+
+    const handleSort = (key: string) => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const handleEditClick = (user: Profile) => {
+        setEditingUser(user);
+        setIsEditModalOpen(true);
+    };
+
+    const handleSaveUser = async (updatedData: Partial<Profile>) => {
+        if (!editingUser) return;
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('No session');
+
+            const response = await fetch(`/api/admin/users/${editingUser.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify(updatedData)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to update user');
+            }
+            
+            const updatedUser = await response.json();
+            
+            // Update local state
+            setUsers(users.map(u => u.id === updatedUser.id ? { ...u, ...updatedUser } : u));
+            
+            // Close modal (handled by parent but good to ensure)
+            setIsEditModalOpen(false);
+        } catch (error) {
+            console.error('Error updating user:', error);
+            alert('Failed to update user');
+            throw error; // Re-throw for modal to handle
+        }
     };
 
     // Filtering Logic
@@ -205,6 +225,25 @@ export default function AdminDashboard() {
             user.member_id?.toLowerCase().includes(userSearch.toLowerCase());
         const matchesStatus = userStatusFilter === 'all' || user.membership_status === userStatusFilter;
         return matchesSearch && matchesStatus;
+    }).sort((a, b) => {
+        if (!sortConfig.key) return 0;
+        
+        // Handle car_models fallback for sorting
+        let aValue: any = a[sortConfig.key as keyof Profile];
+        let bValue: any = b[sortConfig.key as keyof Profile];
+        
+        if (sortConfig.key === 'car_models') {
+            aValue = a.car_models || a.car_model || a.vehicle_model || '';
+            bValue = b.car_models || b.car_model || b.vehicle_model || '';
+        }
+        
+        // Handle nulls
+        if (!aValue) aValue = '';
+        if (!bValue) bValue = '';
+        
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
     });
 
     const filteredRegistrations = registrations.filter(reg => {
@@ -226,35 +265,33 @@ export default function AdminDashboard() {
     return (
         <div className={styles.adminDashboard}>
             <aside className={styles.sidebar}>
-                <div className={styles.sidebarHeader}>
-                    <h3>Admin Menu</h3>
-                </div>
-                <nav className={styles.sidebarNav}>
-                    <button
-                        className={`${styles.navItem} ${activeSection === 'overview' ? styles.active : ''}`}
-                        onClick={() => setActiveSection('overview')}
-                    >
-                        <FaTachometerAlt /> Overview
-                    </button>
-                    <button
-                        className={`${styles.navItem} ${activeSection === 'users' ? styles.active : ''}`}
-                        onClick={() => setActiveSection('users')}
-                    >
-                        <FaUsersCog /> User Management
-                    </button>
-                    <button
-                        className={`${styles.navItem} ${activeSection === 'events' ? styles.active : ''}`}
-                        onClick={() => setActiveSection('events')}
-                    >
-                        <FaCalendarAlt /> Event Management
-                    </button>
-                    <button
-                        className={`${styles.navItem} ${activeSection === 'content' ? styles.active : ''}`}
-                        onClick={() => setActiveSection('content')}
-                    >
-                        <FaFileAlt /> Content Management
-                    </button>
-                </nav>
+                <button
+                    className={`${styles.navItem} ${activeSection === 'overview' ? styles.active : ''}`}
+                    onClick={() => setActiveSection('overview')}
+                >
+                    <FaTachometerAlt /> Overview
+                </button>
+                <button
+                    className={`${styles.navItem} ${activeSection === 'users' ? styles.active : ''}`}
+                    onClick={() => setActiveSection('users')}
+                >
+                    <FaUsersCog /> User Management
+                </button>
+                <button
+                    className={`${styles.navItem} ${activeSection === 'events' ? styles.active : ''}`}
+                    onClick={() => setActiveSection('events')}
+                >
+                    <FaCalendarAlt /> Event Management
+                </button>
+                <button className={styles.navItem} onClick={() => router.push('/admin/shop')}>
+                    <FaBoxOpen /> Shop Management
+                </button>
+                <button
+                    className={`${styles.navItem} ${activeSection === 'content' ? styles.active : ''}`}
+                    onClick={() => setActiveSection('content')}
+                >
+                    <FaFileAlt /> Content Management
+                </button>
             </aside>
 
             <main className={styles.content}>
@@ -369,12 +406,30 @@ export default function AdminDashboard() {
                             <table className={styles.dataTable}>
                                 <thead>
                                     <tr>
-                                        <th>Member ID</th>
-                                        <th>Full Name</th>
-                                        <th>Email</th>
-                                        <th>Status</th>
-                                        <th>Role</th>
-                                        <th>Joined</th>
+                                        {[
+                                            { key: 'member_id', label: 'Member ID' },
+                                            { key: 'full_name', label: 'Full Name' },
+                                            { key: 'email', label: 'Email' },
+                                            { key: 'date_of_birth', label: 'DOB' },
+                                            { key: 'full_address', label: 'Address' },
+                                            { key: 'car_models', label: 'Car Model' },
+                                            { key: 'membership_status', label: 'Status' },
+                                            { key: 'role', label: 'Role' },
+                                            { key: 'created_at', label: 'Joined' },
+                                        ].map((col) => (
+                                            <th 
+                                                key={col.key} 
+                                                onClick={() => handleSort(col.key)} 
+                                                className={styles.sortableHeader}
+                                            >
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                    {col.label}
+                                                    {sortConfig.key === col.key ? 
+                                                        (sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />) 
+                                                        : <FaSort style={{ opacity: 0.3 }} />}
+                                                </div>
+                                            </th>
+                                        ))}
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -383,12 +438,15 @@ export default function AdminDashboard() {
                                         <tr key={user.id}>
                                             <td>{user.member_id || '-'}</td>
                                             <td>{user.full_name}</td>
-                                            <td>{user.email}</td>
+                                            <td>{user.email || '-'}</td>
+                                            <td>{user.date_of_birth ? formatDateEst(user.date_of_birth) : user.dob ? formatDateEst(user.dob) : '-'}</td>
+                                            <td>{user.full_address || user.address || '-'}</td>
+                                            <td>{user.car_models || user.car_model || user.vehicle_model || '-'}</td>
                                             <td><span className={`${styles.statusBadge} ${styles[user.membership_status]}`}>{user.membership_status}</span></td>
                                             <td>{user.role}</td>
                                             <td>{new Date(user.created_at).toLocaleDateString()}</td>
                                             <td>
-                                                <button className={styles.actionBtn}><FaEdit /></button>
+                                                <button className={styles.actionBtn} onClick={() => handleEditClick(user)}><FaEdit /></button>
                                             </td>
                                         </tr>
                                     ))}
@@ -454,7 +512,8 @@ export default function AdminDashboard() {
                                                 {reg.waiver_signed ? <span className={styles.signed}><FaCheck /> Signed</span> : <span className={styles.notSigned}><FaTimes /> Not Signed</span>}
                                             </td>
                                             <td>
-                                                <button className={styles.actionBtn}><FaEdit /></button>
+                                                {/* Placeholder for future event registration editing */}
+                                                <button className={styles.actionBtn} disabled style={{ opacity: 0.5, cursor: 'not-allowed' }} title="Editing registrations is not yet supported"><FaEdit /></button>
                                             </td>
                                         </tr>
                                     ))}
@@ -464,6 +523,13 @@ export default function AdminDashboard() {
                     </div>
                 )}
             </main>
+
+            <EditUserModal
+                user={editingUser}
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSave={handleSaveUser}
+            />
         </div>
     );
 }

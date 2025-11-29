@@ -44,6 +44,26 @@ const sponsors: Sponsor[] = [
         },
         ctaLink: 'https://www.ee-auto.com/contact-us',
         ctaText: 'Book Your Tinting'
+    },
+    {
+        id: 't-house',
+        name: 'T-House Toronto',
+        logo: 'https://static.wixstatic.com/media/50c807_42ad4abd00e24074baa45e4ccdfc7d16~mv2.png/v1/fill/w_113,h_55,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/50c807_42ad4abd00e24074baa45e4ccdfc7d16~mv2.png',
+        category: 'Tesla Customization & Accessories',
+        description: 'T-House Toronto is a premier destination for Tesla customization, offering high-quality color change wraps, upgrades, and accessories to personalize your vehicle.',
+        benefits: [
+            'Exclusive Black Friday Boxing Day Sale pricing',
+            'Color Wraps starting from $2,200 CAD',
+            'Special member rates on Tesla upgrades & accessories',
+            'Limited time offers on select inventory'
+        ],
+        contact: {
+            address: '876 Magnetic Dr, North York, ON, Canada',
+            phone: '416-736-6888',
+            website: 'https://www.thousetoronto.com'
+        },
+        ctaLink: '/member-benefits/t-house',
+        ctaText: 'View Member Deals'
     }
 ];
 

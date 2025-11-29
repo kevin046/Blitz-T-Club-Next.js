@@ -6,15 +6,20 @@ import { supabase } from '@/lib/supabase/client';
 
 interface UserProfile {
     id: string;
-    email: string;
     full_name: string;
     username?: string;
     member_id?: string;
     membership_type: string;
     membership_status: string;
-    vehicle_model?: string;
-    is_admin: boolean;
+    car_models?: string[];
+    role?: string;
     created_at: string;
+    phone?: string;
+    full_address?: string;
+    street?: string;
+    city?: string;
+    province?: string;
+    postal_code?: string;
 }
 
 interface AuthContextType {
@@ -23,6 +28,7 @@ interface AuthContextType {
     loading: boolean;
     signOut: () => Promise<void>;
     refreshProfile: () => Promise<void>;
+    isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,13 +41,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const fetchProfile = async (userId: string) => {
         try {
             const { data, error } = await supabase
-                .from('users')
+                .from('profiles')
                 .select('*')
                 .eq('id', userId)
                 .single();
 
-            if (error) throw error;
-            setProfile(data);
+            if (error) {
+                console.error('Error fetching profile:', error);
+                // If profile doesn't exist, we might want to create one or just set null
+                setProfile(null);
+            } else {
+                setProfile(data);
+            }
         } catch (error) {
             console.error('Error fetching profile:', error);
             setProfile(null);
@@ -57,7 +68,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const initAuth = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session }, error } = await supabase.auth.getSession();
+
+                if (error) {
+                    throw error;
+                }
+
                 setUser(session?.user ?? null);
 
                 if (session?.user) {
@@ -65,6 +81,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
             } catch (error) {
                 console.error('Error initializing auth:', error);
+                // If refresh token is invalid, clear everything
+                setUser(null);
+                setProfile(null);
+                await supabase.auth.signOut();
             } finally {
                 setLoading(false);
             }
@@ -73,7 +93,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         initAuth();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (_event, session) => {
+            async (event, session) => {
+                if (event === 'SIGNED_OUT') {
+                    setUser(null);
+                    setProfile(null);
+                    setLoading(false);
+                    return;
+                }
+
                 setUser(session?.user ?? null);
 
                 if (session?.user) {
@@ -81,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 } else {
                     setProfile(null);
                 }
+                setLoading(false);
             }
         );
 
@@ -99,8 +127,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const isAdmin = profile?.role === 'admin' || profile?.membership_type === 'admin';
+
     return (
-        <AuthContext.Provider value={{ user, profile, loading, signOut, refreshProfile }}>
+        <AuthContext.Provider value={{ user, profile, loading, signOut, refreshProfile, isAdmin }}>
             {children}
         </AuthContext.Provider>
     );

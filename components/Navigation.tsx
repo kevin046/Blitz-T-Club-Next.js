@@ -1,33 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
 import { FaHome, FaCalendar, FaImages, FaGift, FaEnvelope, FaInfoCircle, FaUserPlus, FaSignInAlt, FaTachometerAlt, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Navigation() {
     const [isOpen, setIsOpen] = useState(false);
-    const [session, setSession] = useState<any>(null);
+    const { user, signOut } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
     const { theme } = useTheme();
-
-    useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-        });
-
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-        });
-
-        return () => subscription.unsubscribe();
-    }, []);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -40,12 +26,12 @@ export default function Navigation() {
     };
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
+        await signOut();
         router.push('/login');
         closeMenu();
     };
 
-    const navItems = session
+    const navItems = user
         ? [
             { href: '/', icon: FaHome, label: '', iconOnly: true },
             { href: '/dashboard', icon: FaTachometerAlt, label: 'Dashboard' },
@@ -110,11 +96,25 @@ export default function Navigation() {
                         </Link>
                     </li>
                 ))}
-                {session && (
+                {user && (
                     <li>
-                        <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }}>
+                        <button
+                            onClick={handleLogout}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: 'inherit',
+                                font: 'inherit',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                padding: '0.5rem 1rem',
+                                width: '100%'
+                            }}
+                        >
                             <FaSignOutAlt /> Logout
-                        </a>
+                        </button>
                     </li>
                 )}
                 <li>

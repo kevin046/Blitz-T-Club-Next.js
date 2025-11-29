@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import styles from '../app/dashboard/dashboard.module.css';
 
@@ -10,26 +10,24 @@ interface MembershipCardProps {
 
 export default function MembershipCard({ profile }: MembershipCardProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isFlipped, setIsFlipped] = useState(false);
 
     useEffect(() => {
         if (profile && canvasRef.current) {
-            // Generate QR Code content: Member ID + Verification Token (if any) or just Member ID
-            const qrContent = JSON.stringify({
-                id: profile.id,
-                memberId: profile.member_id,
-                type: profile.membership_type,
-                email: profile.email
-            });
+            // Generate QR Code content: Verification URL with User ID
+            const verificationUrl = `https://blitztclub.com/verify-member.html?member_id=${profile.id}`;
 
-            QRCode.toCanvas(canvasRef.current, qrContent, {
+            QRCode.toCanvas(canvasRef.current, verificationUrl, {
                 width: 120,
-                margin: 1,
+                margin: 0,
                 color: {
                     dark: '#000000',
                     light: '#ffffff',
                 },
             }, (error) => {
-                if (error) console.error('Error generating QR code:', error);
+                if (error) {
+                    console.error('Error generating QR code:', error);
+                }
             });
         }
     }, [profile]);
@@ -37,45 +35,61 @@ export default function MembershipCard({ profile }: MembershipCardProps) {
     if (!profile) return null;
 
     const isPremium = profile.membership_type === 'premium';
+    const isAdmin = profile.role === 'admin' || profile.membership_type === 'admin';
+
+    // Format Member Since Year (2 digits)
+    const memberSinceYear = profile.created_at
+        ? new Date(profile.created_at).getFullYear().toString().slice(-2)
+        : new Date().getFullYear().toString().slice(-2);
 
     return (
-        <div className={`${styles.membershipCard} ${isPremium ? styles.premium : ''}`} data-type={profile.membership_type}>
-            <div className={styles.cardBg}></div>
-            <div className={styles.cardChip}></div>
-            <div className={styles.cardHologram}></div>
-            <div className={styles.cardHeader}>
-                <img
-                    src="https://i.ibb.co/fkrdXZK/Logo4-white.png"
-                    alt="Blitz Tesla Club Logo"
-                    className={styles.cardLogo}
-                    suppressHydrationWarning
-                />
-                <div className={styles.headerText}>
-                    <h2>{isPremium ? 'VIP MEMBER' : 'CLUB MEMBER'}</h2>
-                </div>
-            </div>
+        <div className={styles.membershipCardWrapper} onClick={() => setIsFlipped(!isFlipped)}>
+            <div
+                className={`${styles.membershipCard} ${isFlipped ? styles.flipped : ''} ${isAdmin ? styles.admin : (isPremium ? styles.premium : '')}`}
+                data-type={isAdmin ? 'admin' : (isPremium ? 'premium' : 'standard')}
+            >
+                {/* FRONT FACE */}
+                <div className={styles.cardFront}>
+                    <div className={styles.cardHeader}>
+                        <div className={styles.headerText}>
+                            <h2>{isAdmin ? 'ADMIN' : (isPremium ? 'VIP MEMBER' : 'CLUB MEMBER')}</h2>
+                        </div>
+                    </div>
 
-            <div className={styles.memberInfo}>
-                <h3>{profile.full_name}</h3>
-                <div className={styles.infoRow}>
-                    <span className={styles.label}>Member ID</span>
-                    <span className={styles.value} id="memberId">{profile.member_id || 'Pending'}</span>
-                </div>
-                <div className={styles.infoRow}>
-                    <span className={styles.label}>Member Since</span>
-                    <span className={styles.value}>{new Date(profile.created_at).getFullYear()}</span>
-                </div>
-                <div className={styles.infoRow}>
-                    <span className={styles.label}>Status</span>
-                    <span className={styles.value} style={{ color: '#00e676', fontWeight: 600 }}>Active</span>
-                </div>
-            </div>
+                    <div className={styles.centerLogoContainer}>
+                        <img
+                            src="https://i.ibb.co/fkrdXZK/Logo4-white.png"
+                            alt="Blitz Tesla Club Logo"
+                            className={styles.centerLogo}
+                            suppressHydrationWarning
+                        />
+                    </div>
 
-            <div className={styles.cardFooter}>
-                <div className={styles.qrSection}>
-                    <canvas ref={canvasRef} className={styles.qrCode}></canvas>
-                    <div className={styles.qrText}>
-                        <span>Scan for Event Entry</span>
+                    <div className={styles.cardChip}></div>
+
+                    <div className={styles.memberDetails}>
+                        <div className={styles.memberName}>
+                            <h3>{profile.full_name}</h3>
+                        </div>
+                        <div className={styles.memberSince}>
+                            <span className={styles.memberId}>{profile.member_id || 'N/A'}</span>
+                            <span className={styles.memberSinceLabel}>MEMBER SINCE</span>
+                            <span className={styles.memberSinceValue}>{memberSinceYear}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* BACK FACE */}
+                <div className={styles.cardBack}>
+                    <div className={styles.magneticStripe}></div>
+                    <div className={styles.signatureStrip}>{profile.member_id || 'AUTHORIZED SIGNATURE'}</div>
+
+                    <div className={styles.qrContainer}>
+                        <canvas ref={canvasRef} className={styles.qrCode}></canvas>
+                    </div>
+
+                    <div className={styles.cardBackText}>
+                        Scan to Verify Membership
                     </div>
                 </div>
             </div>

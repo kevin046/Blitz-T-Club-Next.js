@@ -1,48 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
 import { FaUser, FaIdCard, FaCalendarAlt, FaShoppingBag, FaCog, FaSignOutAlt, FaCar, FaMapMarkerAlt, FaEdit, FaExclamationTriangle, FaUserShield, FaStore, FaUsers, FaTachometerAlt } from 'react-icons/fa';
 import MembershipCard from '@/components/MembershipCard';
 import styles from './dashboard.module.css';
 
 export default function Dashboard() {
     const router = useRouter();
+    const { user, profile, loading, signOut, isAdmin } = useAuth();
 
-    const [profile, setProfile] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const getProfile = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-
-            if (!session) {
-                router.push('/login');
-                return;
-            }
-
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-
-            if (error) {
-                console.error('Error fetching profile:', error);
-            } else {
-                setProfile(data);
-            }
-            setLoading(false);
-        };
-
-        getProfile();
-    }, [supabase, router]);
-
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
+    // Redirect if not logged in
+    if (!loading && !user) {
         router.push('/login');
-    };
+        return null;
+    }
 
     if (loading) {
         return (
@@ -89,7 +61,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Admin Section - Only visible to admins */}
-                {profile.role === 'admin' && (
+                {isAdmin && (
                     <div className={`${styles.dashboardCard} ${styles.adminSection}`}>
                         <div className={styles.cardHeader}>
                             <h2><FaUserShield /> Admin Controls</h2>

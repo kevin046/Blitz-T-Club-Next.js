@@ -153,81 +153,188 @@
 }
 
 /* =========================================
-   PREMIUM MEMBERSHIP CARD STYLES
+   PREMIUM MEMBERSHIP CARD (MATTE BLACK TITANIUM)
    ========================================= */
-.membershipCard {
-    /* Always dark theme for the card itself to look premium */
-    background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
-    color: white;
-    border-radius: 16px;
-    padding: 25px;
-    margin: 0 auto;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+.membershipCardWrapper {
+    perspective: 1000px;
+    width: 100%;
     max-width: 420px;
     aspect-ratio: 1.586;
-    /* Standard credit card ratio */
+    margin: 0 auto;
+    cursor: pointer;
+    z-index: 10;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.membershipCard {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    border-radius: 14px;
+}
+
+.membershipCard.flipped {
+    transform: rotateY(180deg);
+}
+
+.cardFront,
+.cardBack {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 14px;
     overflow: hidden;
-    transition: transform 0.5s ease, box-shadow 0.5s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.cardFront {
+    z-index: 2;
+    transform: rotateY(0deg);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding: 25px;
+    background-color: #0d0d0d;
+    background-image:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.2' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    background-blend-mode: overlay, overlay, normal;
+    border: 1px solid rgba(140, 140, 140, 0.5);
+    box-shadow:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.12),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.cardFront::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    pointer-events: none;
     z-index: 1;
+    box-shadow:
+        inset 0 0 2px rgba(0, 0, 0, 0.9),
+        inset 1px 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-.membershipCard::before {
-    /* Noise Texture */
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
+.cardBack {
+    transform: rotateY(180deg);
+    z-index: 1;
+    background-color: #0d0d0d;
+    background-image:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.2' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    background-blend-mode: overlay, overlay, normal;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    border: 1px solid rgba(140, 140, 140, 0.5);
+    box-shadow:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.12),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.membershipCard[data-type="premium"] .cardFront,
+.membershipCard[data-type="admin"] .cardFront {
+    border: 1px solid rgba(229, 228, 226, 0.5);
+}
+
+.membershipCard[data-type="premium"] .cardFront::after,
+.membershipCard[data-type="admin"] .cardFront::after {
+    border-color: rgba(229, 228, 226, 0.35);
+}
+
+.membershipCard .cardHeader {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
     width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-    opacity: 0.3;
-    pointer-events: none;
-    z-index: 0;
+    padding-right: 5px;
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
-.membershipCard:hover {
-    transform: scale(1.02) rotateX(2deg);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-}
-
-.membershipCard.premium {
-    background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    /* Gold border */
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 215, 0, 0.1);
-}
-
-.cardBg {
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
-    transform: rotate(45deg);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Chip Style */
-.cardChip {
-    width: 45px;
-    height: 35px;
-    background: linear-gradient(135deg, #e0e0e0 0%, #ffffff 50%, #e0e0e0 100%);
-    border-radius: 6px;
+.centerLogoContainer {
     position: absolute;
     top: 50%;
-    left: 25px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.centerLogo {
+    width: 90px;
+    height: auto;
+    position: relative;
+    filter:
+        drop-shadow(0 3px 8px rgba(0, 0, 0, 0.95)) drop-shadow(0 -1px 2px rgba(255, 255, 255, 0.1)) grayscale(100%) brightness(1.4) contrast(1.1);
+    opacity: 0.75;
+    transition: all 0.4s ease;
+}
+
+.membershipCardWrapper:hover .centerLogo {
+    opacity: 0.85;
+    filter:
+        drop-shadow(0 4px 12px rgba(0, 0, 0, 1)) drop-shadow(0 -2px 4px rgba(255, 255, 255, 0.15)) grayscale(90%) brightness(1.5) contrast(1.15);
+}
+
+.headerText h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    margin: 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    background: linear-gradient(to bottom, #e5e4e2 0%, #9ca3af 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.cardChip {
+    width: 48px;
+    height: 36px;
+    background: linear-gradient(135deg, #d9d9d9 0%, #ffffff 50%, #b0b0b0 100%);
+    border-radius: 5px;
+    position: absolute;
+    top: 50%;
+    left: 35px;
     transform: translateY(-50%);
     z-index: 2;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
-    opacity: 0.9;
-    overflow: hidden;
+    box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.9),
+        0 2px 5px rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.35);
 }
 
 .cardChip::before {
@@ -250,133 +357,129 @@
     background: rgba(0, 0, 0, 0.3);
 }
 
-.membershipCard.premium .cardChip {
-    background: linear-gradient(135deg, #d4af37 0%, #f9e38e 50%, #d4af37 100%);
-    /* Gold Chip */
+.membershipCard[data-type="premium"] .cardChip {
+    background: linear-gradient(135deg, #e6c975 0%, #fff7d1 50%, #cba434 100%);
 }
 
-/* Hologram */
-.cardHologram {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.4) 100%);
-    border-radius: 50%;
-    opacity: 0.6;
-    z-index: 1;
-    pointer-events: none;
-    mix-blend-mode: overlay;
-}
-
-.cardHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: none;
-    /* Remove default card header border */
-    margin-bottom: 0;
-    padding-bottom: 0;
-    position: relative;
-    z-index: 2;
-}
-
-.cardLogo {
-    height: 40px;
-    width: auto;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-}
-
-.headerText h2 {
-    font-size: 14px;
-    margin: 0;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: rgba(255, 255, 255, 0.8);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.membershipCard.premium .headerText h2 {
-    background: linear-gradient(to right, #d4af37, #f9e38e, #d4af37);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: none;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
-}
-
-.memberInfo {
-    margin: 0;
-    position: relative;
-    z-index: 2;
-    padding-left: 60px;
-    /* Space for chip */
-}
-
-.memberInfo h3 {
-    font-size: 20px;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: white;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-    font-family: 'Courier New', monospace;
-    /* Credit card font feel */
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.infoRow {
-    display: flex;
-    gap: 15px;
-    padding: 0;
-    border-bottom: none;
-    font-size: 10px;
-    align-items: center;
-}
-
-.label {
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
-    font-size: 8px;
-    letter-spacing: 1px;
-}
-
-.value {
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-}
-
-.cardFooter {
+.memberDetails {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-top: auto;
     position: relative;
     z-index: 2;
+    margin-top: auto;
+    padding-bottom: 5px;
 }
 
-.qrSection {
-    text-align: left;
+.memberName {
+    display: flex;
+    flex-direction: column;
+}
+
+.memberName h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    margin: 0;
+    background: linear-gradient(to bottom, #e5e4e2 0%, #9ca3af 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.memberSince {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.memberId {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    margin-bottom: 8px;
+    background: linear-gradient(to bottom, #e5e4e2 0%, #9ca3af 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.memberSinceLabel {
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    margin-bottom: 2px;
+    font-weight: 700;
+    background: linear-gradient(to bottom, #e5e4e2 0%, #9ca3af 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.7;
+}
+
+.memberSinceValue {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    background: linear-gradient(to bottom, #e5e4e2 0%, #9ca3af 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.magneticStripe {
+    width: 100%;
+    height: 50px;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    background: linear-gradient(to bottom, #0a0a0a, #000000, #0a0a0a);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.signatureStrip {
+    display: none;
+}
+
+.qrContainer {
+    margin-top: 0;
+    background: transparent;
+    padding: 0;
+    position: relative;
+    z-index: 3;
 }
 
 .qrCode {
-    width: 60px !important;
-    height: 60px !important;
-    background: white;
-    padding: 4px;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    margin: 0 0 5px 0;
+    width: 120px !important;
+    height: 120px !important;
+    display: block;
+    filter: invert(1) brightness(1.1);
 }
 
-.qrText {
-    font-size: 8px;
-    color: rgba(255, 255, 255, 0.5);
+.cardBackText {
+    margin-top: 12px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    background: linear-gradient(to bottom, #e5e4e2 0%, #9ca3af 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    z-index: 3;
 }
 
 /* Quick Links */
@@ -463,6 +566,9 @@
     }
 }
 
+/* =========================================
+   MOBILE & TABLET RESPONSIVE STYLES
+   ========================================= */
 @media (max-width: 768px) {
     .dashboardPage {
         padding: 80px 16px 30px;
@@ -470,9 +576,106 @@
 
     .dashboardGrid {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
 
     .membershipCard {
         padding: 20px;
+    }
+
+    .membershipCardWrapper {
+        max-width: 95vw;
+        margin: 0 auto;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    .cardFront,
+    .cardBack {
+        padding: 20px;
+    }
+
+    .centerLogo {
+        width: 75px;
+    }
+
+    .cardChip {
+        width: 42px;
+        height: 32px;
+        left: 25px;
+    }
+
+    .headerText h2 {
+        font-size: 10px;
+        letter-spacing: 2px;
+    }
+
+    .memberName h3 {
+        font-size: 14px;
+        letter-spacing: 2px;
+    }
+
+    .memberId {
+        font-size: 9px;
+        letter-spacing: 1.5px;
+        margin-bottom: 6px;
+    }
+
+    .memberSinceLabel {
+        font-size: 6px;
+        letter-spacing: 1.5px;
+    }
+
+    .memberSinceValue {
+        font-size: 13px;
+        letter-spacing: 2px;
+    }
+
+    .magneticStripe {
+        height: 45px;
+        top: 25px;
+    }
+
+    .qrCode {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    .cardBackText {
+        font-size: 8px;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 375px) {
+    .membershipCardWrapper {
+        max-width: 100vw;
+    }
+
+    .cardFront,
+    .cardBack {
+        padding: 18px;
+    }
+
+    .centerLogo {
+        width: 65px;
+    }
+
+    .memberName h3 {
+        font-size: 12px;
+        letter-spacing: 1.8px;
+    }
+
+    .memberId {
+        font-size: 8px;
+    }
+
+    .memberSinceValue {
+        font-size: 12px;
+    }
+
+    .qrCode {
+        width: 90px !important;
+        height: 90px !important;
     }
 }
