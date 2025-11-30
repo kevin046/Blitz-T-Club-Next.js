@@ -4,9 +4,9 @@ import "./components.css";
 import "./footer.css";
 import "./hero.css";
 import Footer from "@/components/Footer";
-import JotformAI from "@/components/JotformAI";
 import { Providers } from "@/components/Providers";
 import DynamicNavigation from "@/components/DynamicNavigation";
+import DynamicJotformAI from "@/components/DynamicJotformAI";
 
 export const metadata: Metadata = {
   title: "Blitz T Club - Tesla Enthusiasts Community",
@@ -41,7 +41,7 @@ export default function RootLayout({
           <DynamicNavigation />
           {children}
           <Footer />
-          {/* <JotformAI /> */}
+          <DynamicJotformAI />
         </Providers>
       </body>
     </html>
