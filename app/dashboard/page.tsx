@@ -27,16 +27,16 @@ export default function Dashboard() {
                 {/* Welcome Section */}
                 <div className={styles.dashboardCard}>
                     <div className={styles.cardHeader}>
-                        <h2><FaUser /> Welcome, {profile.full_name?.split(' ')[0] || 'Member'}!</h2>
+                        <h2><FaUser /> Welcome, {profile?.full_name?.split(' ')[0] || 'Member'}!</h2>
                     </div>
                     <div className={styles.cardContent}>
                         <p className={styles.usernameDisplay}>
                             <span className={styles.usernameLabel}>Username:</span>
-                            <span id="userUsername">@{profile.username}</span>
+                            <span id="userUsername">@{profile?.username || 'loading...'}</span>
                         </p>
                         <div className={styles.statusIndicators}>
                             <div className={styles.statusItem}>
-                                <span className={styles.statusText}>{profile.membership_type === 'premium' ? 'Premium Member' : 'Standard Member'}</span>
+                                <span className={styles.statusText}>{profile?.membership_type === 'premium' ? 'Premium Member' : 'Standard Member'}</span>
                             </div>
                         </div>
                     </div>
@@ -48,7 +48,7 @@ export default function Dashboard() {
                         <h2><FaIdCard /> Digital Membership Card</h2>
                     </div>
                     <div className={styles.cardContent}>
-                        <MembershipCard profile={profile} />
+                        {profile ? <MembershipCard profile={profile} /> : <div>Loading membership card...</div>}
                     </div>
                 </div>
 
@@ -119,12 +119,12 @@ export default function Dashboard() {
                     </div>
                     <div className={styles.cardContent}>
                         <div className={styles.carModelsList}>
-                            {profile.car_models && profile.car_models.map((model: string, index: number) => (
+                            {profile?.car_models && profile.car_models.map((model: string, index: number) => (
                                 <div key={index} className={styles.carModelBadge}>
                                     <FaCar /> {model}
                                 </div>
                             ))}
-                            {(!profile.car_models || profile.car_models.length === 0) && (
+                            {(!profile?.car_models || profile.car_models.length === 0) && (
                                 <p>No vehicles added yet.</p>
                             )}
                         </div>
@@ -139,12 +139,12 @@ export default function Dashboard() {
                     </div>
                     <div className={styles.cardContent}>
                         <div className={styles.addressDisplay}>
-                            {profile.full_address ? (
+                            {profile?.full_address ? (
                                 <p>{profile.full_address}</p>
                             ) : (
                                 <>
-                                    <p>{profile.street}</p>
-                                    <p>{profile.city}, {profile.province} {profile.postal_code}</p>
+                                    <p>{profile?.street || 'No street'}</p>
+                                    <p>{profile?.city || 'No city'}, {profile?.province || ''} {profile?.postal_code || ''}</p>
                                 </>
                             )}
                         </div>
