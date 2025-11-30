@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { FaUser, FaIdCard, FaCalendarAlt, FaShoppingBag, FaCog, FaSignOutAlt, FaCar, FaMapMarkerAlt, FaEdit, FaExclamationTriangle, FaUserShield, FaStore, FaUsers, FaTachometerAlt } from 'react-icons/fa';
+import { FaUser, FaIdCard, FaCalendarAlt, FaShoppingBag, FaCog, FaSignOutAlt, FaCar, FaMapMarkerAlt, FaEdit, FaExclamationTriangle, FaUserShield, FaStore, FaUsers, FaTachometerAlt, FaSpinner } from 'react-icons/fa';
 import MembershipCard from '@/components/MembershipCard';
 import DynamicJotformAI from '@/components/DynamicJotformAI';
 import styles from './dashboard.module.css';
@@ -20,7 +20,25 @@ export default function Dashboard() {
         }
     }, [user, loading, router]);
 
-    if (!loading && !user) return null;
+    if (loading) {
+        return (
+            <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                minHeight: '100vh',
+                background: 'var(--color-background)',
+                color: 'var(--color-text-primary)'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <FaSpinner className="fa-spin" style={{ fontSize: '2rem', color: 'var(--color-primary)', marginBottom: '1rem' }} />
+                    <p>Loading dashboard...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) return null;
 
     // Show dashboard immediately, even if profile is still loading
 

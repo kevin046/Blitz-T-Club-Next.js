@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 import { FaEye, FaEyeSlash, FaSpinner, FaCheck } from 'react-icons/fa';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './login.module.css';
 
 export default function Login() {
@@ -16,11 +17,17 @@ export default function Login() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { theme } = useTheme();
+    const { user, loading: authLoading } = useAuth();
+
+    const redirectUrl = searchParams.get('redirect') || '/dashboard';
 
     useEffect(() => {
-        router.prefetch('/dashboard');
-    }, [router]);
+        if (user && !authLoading) {
+            router.replace(redirectUrl); // Use replace to prevent back-button loops
+        }
+    }, [user, authLoading, router, redirectUrl]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,8 +43,7 @@ export default function Login() {
             if (error) throw error;
 
             setSuccess(true);
-            // Navigate immediately - no artificial delay
-            router.push('/dashboard');
+            // Navigation is handled by the useEffect above once auth state updates
         } catch (err: any) {
             console.error('Login error:', err);
             if (err.message.includes('Invalid login credentials')) {
