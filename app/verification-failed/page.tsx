@@ -20,7 +20,7 @@ export default function VerificationFailedPage() {
     return (
         <div className={styles.container}>
             <img
-                src="https://qhkcrrphsjpytdfqfamq.supabase.co/storage/v1/object/public/avatars//logo.png"
+                src="https://qhkcrrphsjpytdfqfamq.supabase.co/storage/v1/object/public/avatars/logo.png"
                 alt="Blitz Tesla Club Logo"
                 className={styles.logo}
             />

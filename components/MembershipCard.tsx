@@ -25,7 +25,9 @@ export default function MembershipCard({ profile }: MembershipCardProps) {
     useEffect(() => {
         if (profile && canvasRef.current) {
             // Generate QR Code content: Verification URL with User ID
-            const verificationUrl = `https://blitztclub.com/verify-member.html?member_id=${profile.id}`;
+            // Use window.location.origin to ensure it works on both localhost and production
+            const origin = typeof window !== 'undefined' ? window.location.origin : 'https://blitztclub.com';
+            const verificationUrl = `${origin}/verify-member?member_id=${profile.id}`;
 
             QRCode.toCanvas(canvasRef.current, verificationUrl, {
                 width: 120,

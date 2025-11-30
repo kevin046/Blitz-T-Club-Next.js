@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
@@ -9,7 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './login.module.css';
 
-export default function Login() {
+function LoginContent() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -138,5 +138,17 @@ export default function Login() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function Login() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+                <FaSpinner className="animate-spin text-4xl text-primary" />
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }
