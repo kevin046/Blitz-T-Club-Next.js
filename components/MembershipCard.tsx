@@ -25,8 +25,9 @@ export default function MembershipCard({ profile }: MembershipCardProps) {
     useEffect(() => {
         if (profile && canvasRef.current) {
             // Generate QR Code content: Verification URL with User ID
-            // Use window.location.origin to ensure it works on both localhost and production
-            const origin = typeof window !== 'undefined' ? window.location.origin : 'https://blitztclub.com';
+            // Using the new Next.js route structure (no .html extension)
+            // When scanned, this will open: https://www.blitztclub.com/verify-member?member_id=...
+            const origin = 'https://www.blitztclub.com';
             const verificationUrl = `${origin}/verify-member?member_id=${profile.id}`;
 
             QRCode.toCanvas(canvasRef.current, verificationUrl, {
