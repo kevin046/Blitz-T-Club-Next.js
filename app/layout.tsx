@@ -3,10 +3,12 @@ import "./globals.css";
 import "./components.css";
 import "./footer.css";
 import "./hero.css";
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import JotformAI from "@/components/JotformAI";
 import { Providers } from "@/components/Providers";
+import dynamic from 'next/dynamic';
+
+const Navigation = dynamic(() => import('@/components/Navigation'), { ssr: false });
 
 export const metadata: Metadata = {
   title: "Blitz T Club - Tesla Enthusiasts Community",
