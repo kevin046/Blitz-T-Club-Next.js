@@ -1,13 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaHome, FaCalendar, FaImages, FaGift, FaEnvelope, FaInfoCircle, FaUserPlus, FaSignInAlt, FaBars, FaTimes } from 'react-icons/fa';
+import { FaHome, FaCalendar, FaImages, FaGift, FaEnvelope, FaInfoCircle, FaUserPlus, FaSignInAlt, FaBars, FaTimes, FaTachometerAlt, FaSignOutAlt } from 'react-icons/fa';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Navigation() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
+    const { user, signOut } = useAuth();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -19,7 +26,12 @@ export default function Navigation() {
         document.body.classList.remove('nav-open');
     };
 
-    // Simplified navigation without auth dependency
+    const handleSignOut = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        closeMenu();
+        await signOut();
+    };
+
     const navItems = [
         { href: '/', icon: FaHome, label: '', iconOnly: true },
         { href: '/events', icon: FaCalendar, label: 'Events' },
@@ -27,8 +39,6 @@ export default function Navigation() {
         { href: '/member-benefits', icon: FaGift, label: 'Member Benefits' },
         { href: '/contact', icon: FaEnvelope, label: 'Contact' },
         { href: '/about', icon: FaInfoCircle, label: 'About Us' },
-        { href: '/register', icon: FaUserPlus, label: 'Join Us' },
-        { href: '/login', icon: FaSignInAlt, label: 'Login' },
     ];
 
     if (pathname === '/blitz-shop') return null;
@@ -74,7 +84,51 @@ export default function Navigation() {
                         </Link>
                     </li>
                 ))}
-                {/* Removed logout button and theme toggle temporarily */}
+
+                {/* Auth Dependent Items */}
+                {mounted && user ? (
+                    <>
+                        <li>
+                            <Link
+                                href="/dashboard"
+                                className={pathname === '/dashboard' ? 'active' : ''}
+                                onClick={closeMenu}
+                            >
+                                <FaTachometerAlt />
+                                Dashboard
+                            </Link>
+                        </li>
+                        <li>
+                            <a href="#" onClick={handleSignOut} className="logout-btn">
+                                <FaSignOutAlt />
+                                Logout
+                            </a>
+                        </li>
+                    </>
+                ) : (
+                    <>
+                        <li>
+                            <Link
+                                href="/register"
+                                className={pathname === '/register' ? 'active' : ''}
+                                onClick={closeMenu}
+                            >
+                                <FaUserPlus />
+                                Join Us
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                href="/login"
+                                className={pathname === '/login' ? 'active' : ''}
+                                onClick={closeMenu}
+                            >
+                                <FaSignInAlt />
+                                Login
+                            </Link>
+                        </li>
+                    </>
+                )}
             </ul>
         </nav>
     );
