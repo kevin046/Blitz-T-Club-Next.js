@@ -55,7 +55,7 @@ export default function EventsPage() {
         };
 
         init();
-    }, [supabase]);
+    }, []); // Empty dependency array - only run once on mount
 
     const fetchEvents = async () => {
         const { data } = await supabase
