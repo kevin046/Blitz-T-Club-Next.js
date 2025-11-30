@@ -123,7 +123,7 @@ export default function EventsPage() {
             setRegistrations(regs || []);
         } catch (error) {
             console.error('Error registering:', error);
-            alert('Failed to register: ' + error.message);
+            alert('Failed to register: ' + (error as any).message);
         } finally {
             setRegistering(false);
         }
