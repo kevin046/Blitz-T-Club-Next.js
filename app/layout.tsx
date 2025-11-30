@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   title: "Blitz T Club - Tesla Enthusiasts Community",
   description: "Join the premier Tesla owners club for exclusive events, meetups, and member benefits.",
   icons: {
-    icon: "https://qhkcrrphsjpytdfqfamq.supabase.co/storage/v1/object/public/avatars/logo-black.png",
-    apple: "https://qhkcrrphsjpytdfqfamq.supabase.co/storage/v1/object/public/avatars/logo-black.png",
+    icon: "https://qhkcrrphsjpytdfqfamq.supabase.co/storage/v1/object/public/avatars/logo.png",
+    apple: "https://qhkcrrphsjpytdfqfamq.supabase.co/storage/v1/object/public/avatars/logo.png",
   },
 };
 
