@@ -1,5 +1,8 @@
 'use client';
 
+import { Providers } from '@/components/Providers';
+import "./globals.css";
+
 export default function GlobalError({
     error,
     reset,
@@ -8,35 +11,39 @@ export default function GlobalError({
     reset: () => void;
 }) {
     return (
-        <html>
+        <html lang="en">
             <body>
-                <div style={{
-                    padding: '20px',
-                    textAlign: 'center',
-                    fontFamily: 'system-ui, sans-serif',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: '100vh'
-                }}>
-                    <h2 style={{ color: '#d32f2f', marginBottom: '16px' }}>Something went wrong!</h2>
-                    <button
-                        onClick={() => reset()}
-                        style={{
-                            padding: '12px 24px',
-                            marginTop: '20px',
-                            cursor: 'pointer',
-                            backgroundColor: '#1976d2',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            fontSize: '16px'
-                        }}
-                    >
-                        Try again
-                    </button>
-                </div>
+                <Providers>
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '100vh',
+                        padding: '20px',
+                        textAlign: 'center',
+                        fontFamily: 'var(--font-inter, sans-serif)',
+                        backgroundColor: 'var(--background)',
+                        color: 'var(--foreground)'
+                    }}>
+                        <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Something went wrong!</h2>
+                        <p style={{ marginBottom: '2rem', color: 'red' }}>{error.message}</p>
+                        <button
+                            onClick={() => reset()}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: 'var(--primary)',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            Try again
+                        </button>
+                    </div>
+                </Providers>
             </body>
         </html>
     );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
@@ -18,6 +18,9 @@ export default function Login() {
     const router = useRouter();
     const { theme } = useTheme();
 
+    useEffect(() => {
+        router.prefetch('/dashboard');
+    }, [router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

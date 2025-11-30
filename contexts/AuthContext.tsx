@@ -20,6 +20,7 @@ interface UserProfile {
     city?: string;
     province?: string;
     postal_code?: string;
+    vehicle_model?: string;
 }
 
 interface AuthContextType {
@@ -110,7 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setUser(session?.user ?? null);
 
                 if (session?.user) {
-                    await fetchProfile(session.user.id);
+                    fetchProfile(session.user.id);
                 } else {
                     setProfile(null);
                     setProfileLoading(false);

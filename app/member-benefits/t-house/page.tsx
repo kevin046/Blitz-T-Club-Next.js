@@ -1,10 +1,46 @@
 'use client';
 
-import { FaCar, FaMapMarkerAlt, FaPhone, FaGlobe, FaArrowLeft, FaInfoCircle, FaPalette, FaTools, FaFilePdf } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase/client';
+import { FaCar, FaMapMarkerAlt, FaPhone, FaGlobe, FaArrowLeft, FaInfoCircle, FaPalette, FaTools, FaFilePdf, FaSpinner } from 'react-icons/fa';
 import Link from 'next/link';
 import styles from '../member-benefits.module.css';
 
 export default function THousePage() {
+    const router = useRouter();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                router.push('/login?redirect=/member-benefits/t-house');
+            } else {
+                setLoading(false);
+            }
+        };
+        checkUser();
+    }, [router]);
+
+    if (loading) {
+        return (
+            <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                minHeight: '100vh',
+                background: 'var(--color-background)',
+                color: 'var(--color-text-primary)'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <FaSpinner className="fa-spin" style={{ fontSize: '2rem', color: 'var(--color-primary)', marginBottom: '1rem' }} />
+                    <p>Verifying membership...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.benefitsPage}>
             <Link href="/member-benefits" className={styles.backButton}>

@@ -36,12 +36,15 @@ export default function Navigation() {
         { href: '/', icon: FaHome, label: '', iconOnly: true },
         { href: '/events', icon: FaCalendar, label: 'Events' },
         { href: '/gallery', icon: FaImages, label: 'Gallery' },
-        { href: '/member-benefits', icon: FaGift, label: 'Member Benefits' },
         { href: '/contact', icon: FaEnvelope, label: 'Contact' },
         { href: '/about', icon: FaInfoCircle, label: 'About Us' },
     ];
 
-    if (pathname === '/blitz-shop') return null;
+    const memberItems = [
+        { href: '/member-benefits', icon: FaGift, label: 'Member Benefits' },
+    ];
+
+    if (pathname === '/blitz-shop' || pathname === '/shop') return null;
 
     return (
         <nav>
@@ -81,6 +84,20 @@ export default function Navigation() {
                         >
                             <item.icon />
                             {!item.iconOnly && item.label}
+                        </Link>
+                    </li>
+                ))}
+
+                {/* Member Only Items */}
+                {mounted && user && memberItems.map((item) => (
+                    <li key={item.href}>
+                        <Link
+                            href={item.href}
+                            className={pathname === item.href ? 'active' : ''}
+                            onClick={closeMenu}
+                        >
+                            <item.icon />
+                            {item.label}
                         </Link>
                     </li>
                 ))}

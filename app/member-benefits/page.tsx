@@ -1,12 +1,48 @@
 
 'use client';
 
-import { FaShieldAlt, FaCar, FaMapMarkerAlt, FaArrowRight, FaShoppingBag } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase/client';
+import { FaShieldAlt, FaCar, FaMapMarkerAlt, FaArrowRight, FaShoppingBag, FaSpinner } from 'react-icons/fa';
 import Link from 'next/link';
 import DynamicJotformAI from '@/components/DynamicJotformAI';
 import styles from './member-benefits.module.css';
 
 export default function MemberBenefitsPage() {
+    const router = useRouter();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                router.push('/login?redirect=/member-benefits');
+            } else {
+                setLoading(false);
+            }
+        };
+        checkUser();
+    }, [router]);
+
+    if (loading) {
+        return (
+            <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                minHeight: '100vh',
+                background: 'var(--color-background)',
+                color: 'var(--color-text-primary)'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <FaSpinner className="fa-spin" style={{ fontSize: '2rem', color: 'var(--color-primary)', marginBottom: '1rem' }} />
+                    <p>Verifying membership...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.benefitsPage}>
             <header className={styles.header}>
