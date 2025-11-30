@@ -25,7 +25,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminShop() {
     const router = useRouter();
-    const { user, profile, loading: authLoading, isAdmin } = useAuth();
+    const { user, profile, loading: authLoading, profileLoading, isAdmin } = useAuth();
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
@@ -34,7 +34,7 @@ export default function AdminShop() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        if (authLoading) return;
+        if (authLoading || profileLoading) return;
 
         if (!user) {
             router.push('/login');
@@ -42,13 +42,12 @@ export default function AdminShop() {
         }
 
         if (!isAdmin) {
-            // alert('Access denied. Admin privileges required.');
             router.push('/dashboard');
             return;
         }
 
         fetchProducts().then(() => setLoading(false));
-    }, [user, isAdmin, authLoading, router]);
+    }, [user, isAdmin, authLoading, profileLoading, router]);
 
     // Remove initAdmin and its call
 

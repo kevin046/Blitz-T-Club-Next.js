@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { FaUser, FaIdCard, FaCalendarAlt, FaShoppingBag, FaCog, FaSignOutAlt, FaCar, FaMapMarkerAlt, FaEdit, FaExclamationTriangle, FaUserShield, FaStore, FaUsers, FaTachometerAlt } from 'react-icons/fa';
@@ -12,10 +13,14 @@ export default function Dashboard() {
     const { user, profile, loading, signOut, isAdmin } = useAuth();
 
     // Redirect if not logged in (but don't wait for loading)
-    if (!loading && !user) {
-        router.push('/login');
-        return null;
-    }
+    // Redirect if not logged in
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/login');
+        }
+    }, [user, loading, router]);
+
+    if (!loading && !user) return null;
 
     // Show dashboard immediately, even if profile is still loading
 
@@ -135,7 +140,7 @@ export default function Dashboard() {
                 <div className={styles.dashboardCard}>
                     <div className={styles.cardHeader}>
                         <h2><FaMapMarkerAlt /> Address</h2>
-                        <button className={styles.editInfoBtn}><FaEdit /> Edit</button>
+                        <button className={styles.editInfoBtn} onClick={() => router.push('/profile')}><FaEdit /> Edit</button>
                     </div>
                     <div className={styles.cardContent}>
                         <div className={styles.addressDisplay}>

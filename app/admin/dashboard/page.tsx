@@ -49,7 +49,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminDashboard() {
     const router = useRouter();
-    const { user, profile, loading: authLoading, isAdmin } = useAuth();
+    const { user, profile, loading: authLoading, profileLoading, isAdmin } = useAuth();
 
     const [loading, setLoading] = useState(true);
     const [activeSection, setActiveSection] = useState('overview');
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
-        if (authLoading) return;
+        if (authLoading || profileLoading) return;
 
         if (!user) {
             router.push('/login');
@@ -85,13 +85,12 @@ export default function AdminDashboard() {
         }
 
         if (!isAdmin) {
-            // alert('Access denied. Admin privileges required.'); // Better to redirect without alert or show unauthorized page
             router.push('/dashboard');
             return;
         }
 
         loadDashboardData().then(() => setLoading(false));
-    }, [user, isAdmin, authLoading, router]);
+    }, [user, isAdmin, authLoading, profileLoading, router]);
 
     // Remove initAdmin and its call
 
@@ -197,17 +196,17 @@ export default function AdminDashboard() {
                 },
                 body: JSON.stringify(updatedData)
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to update user');
             }
-            
+
             const updatedUser = await response.json();
-            
+
             // Update local state
             setUsers(users.map(u => u.id === updatedUser.id ? { ...u, ...updatedUser } : u));
-            
+
             // Close modal (handled by parent but good to ensure)
             setIsEditModalOpen(false);
         } catch (error) {
@@ -227,20 +226,20 @@ export default function AdminDashboard() {
         return matchesSearch && matchesStatus;
     }).sort((a, b) => {
         if (!sortConfig.key) return 0;
-        
+
         // Handle car_models fallback for sorting
         let aValue: any = a[sortConfig.key as keyof Profile];
         let bValue: any = b[sortConfig.key as keyof Profile];
-        
+
         if (sortConfig.key === 'car_models') {
             aValue = a.car_models || a.car_model || a.vehicle_model || '';
             bValue = b.car_models || b.car_model || b.vehicle_model || '';
         }
-        
+
         // Handle nulls
         if (!aValue) aValue = '';
         if (!bValue) bValue = '';
-        
+
         if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
@@ -417,15 +416,15 @@ export default function AdminDashboard() {
                                             { key: 'role', label: 'Role' },
                                             { key: 'created_at', label: 'Joined' },
                                         ].map((col) => (
-                                            <th 
-                                                key={col.key} 
-                                                onClick={() => handleSort(col.key)} 
+                                            <th
+                                                key={col.key}
+                                                onClick={() => handleSort(col.key)}
                                                 className={styles.sortableHeader}
                                             >
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                                     {col.label}
-                                                    {sortConfig.key === col.key ? 
-                                                        (sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />) 
+                                                    {sortConfig.key === col.key ?
+                                                        (sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />)
                                                         : <FaSort style={{ opacity: 0.3 }} />}
                                                 </div>
                                             </th>

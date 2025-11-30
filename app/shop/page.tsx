@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase/client';
 import { FaShoppingCart, FaHome, FaSpinner } from 'react-icons/fa';
 import ProductCard from '@/components/ProductCard';
 import CartModal from '@/components/CartModal';
+import ProductDetailsModal from '@/components/ProductDetailsModal';
 import styles from './shop.module.css';
 
 interface Product {
@@ -19,6 +20,7 @@ interface Product {
     inventory: number;
     category?: string;
     is_published: boolean;
+    description?: string;
 }
 
 interface CartItem {
@@ -37,6 +39,7 @@ export default function Shop() {
     const [cart, setCart] = useState<CartItem[]>([]);
     const [showCart, setShowCart] = useState(false);
     const [user, setUser] = useState<any>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     useEffect(() => {
         const initShop = async () => {
@@ -244,6 +247,7 @@ export default function Shop() {
                             key={product.id}
                             product={product}
                             onAddToCart={addToCart}
+                            onProductClick={() => setSelectedProduct(product)}
                         />
                     ))
                 ) : (
@@ -261,6 +265,14 @@ export default function Shop() {
                     onUpdateQuantity={updateQuantity}
                     onRemove={removeFromCart}
                     onCheckout={handleCheckout}
+                />
+            )}
+
+            {selectedProduct && (
+                <ProductDetailsModal
+                    product={selectedProduct}
+                    onClose={() => setSelectedProduct(null)}
+                    onAddToCart={addToCart}
                 />
             )}
         </div>

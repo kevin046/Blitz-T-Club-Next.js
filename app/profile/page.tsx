@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
@@ -9,7 +9,7 @@ import styles from './profile.module.css';
 
 export default function ProfileSettings() {
     const router = useRouter();
-    const { user, profile } = useAuth();
+    const { user, profile, loading: authLoading } = useAuth();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
@@ -24,6 +24,13 @@ export default function ProfileSettings() {
         postal_code: profile?.postal_code || '',
         vehicle_model: profile?.vehicle_model || '',
     });
+
+    // Redirect if not authenticated
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/login');
+        }
+    }, [user, authLoading, router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
@@ -67,9 +74,18 @@ export default function ProfileSettings() {
         }
     };
 
+    // Redirect if not logged in (use useEffect to avoid render-time navigation)
+    // Redirect if not logged in (use useEffect to avoid render-time navigation)
+    if (authLoading) return <div className={styles.settingsPage}><div className={styles.container}>Loading...</div></div>;
+
     if (!user) {
-        router.push('/login');
-        return null;
+        return (
+            <div className={styles.settingsPage}>
+                <div className={styles.container}>
+                    <p>Redirecting to login...</p>
+                </div>
+            </div>
+        );
     }
 
     return (

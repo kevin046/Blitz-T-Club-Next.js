@@ -1,7 +1,7 @@
 
 'use client';
 
-import { FaShieldAlt, FaCar, FaMapMarkerAlt, FaArrowRight } from 'react-icons/fa';
+import { FaShieldAlt, FaCar, FaMapMarkerAlt, FaArrowRight, FaShoppingBag } from 'react-icons/fa';
 import Link from 'next/link';
 import DynamicJotformAI from '@/components/DynamicJotformAI';
 import styles from './member-benefits.module.css';
@@ -99,6 +99,48 @@ export default function MemberBenefitsPage() {
 
                         <div className={styles.viewDetailsBtn}>
                             View Details <FaArrowRight />
+                        </div>
+                    </div>
+                </Link>
+
+                {/* Blitz Shop Vendor Card */}
+                <Link href="/shop" className={styles.vendorCard}>
+                    <div className={styles.vendorBanner} style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #333333 100%)' }}>
+                        <div className={styles.vendorLogo} style={{ padding: '10px', background: 'radial-gradient(circle at center, #4a4a4a 0%, #1a1a1a 100%)', borderColor: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <img
+                                src="https://i.ibb.co/fkrdXZK/Logo4-white.png"
+                                alt="Blitz Shop"
+                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className={styles.vendorContent}>
+                        <h2 className={styles.vendorName}>
+                            <span className={styles.brandHighlight}>Blitz</span> Shop
+                        </h2>
+                        <p className={styles.vendorCategory}>
+                            <FaShoppingBag /> Tesla Accessories
+                        </p>
+
+                        <div className={styles.vendorOffers}>
+                            <div className={styles.offerHighlight}>
+                                <FaShieldAlt />
+                                <span>Near Book Value Pricing</span>
+                            </div>
+                            <div className={styles.offerHighlight}>
+                                <FaShieldAlt />
+                                <span>Exclusive Member Deals</span>
+                            </div>
+                        </div>
+
+                        <div className={styles.vendorLocation}>
+                            <FaMapMarkerAlt />
+                            <span>Online Store</span>
+                        </div>
+
+                        <div className={styles.viewDetailsBtn}>
+                            Shop Now <FaArrowRight />
                         </div>
                     </div>
                 </Link>

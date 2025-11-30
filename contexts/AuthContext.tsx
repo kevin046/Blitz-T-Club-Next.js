@@ -26,6 +26,7 @@ interface AuthContextType {
     user: User | null;
     profile: UserProfile | null;
     loading: boolean;
+    profileLoading: boolean;
     signOut: () => Promise<void>;
     refreshProfile: () => Promise<void>;
     isAdmin: boolean;
@@ -37,9 +38,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+    const [profileLoading, setProfileLoading] = useState(true);
 
     const fetchProfile = async (userId: string) => {
         try {
+            setProfileLoading(true);
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
@@ -48,7 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (error) {
                 console.error('Error fetching profile:', error);
-                // If profile doesn't exist, we might want to create one or just set null
                 setProfile(null);
             } else {
                 setProfile(data);
@@ -56,6 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error('Error fetching profile:', error);
             setProfile(null);
+        } finally {
+            setProfileLoading(false);
         }
     };
 
@@ -78,12 +82,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // Fetch profile asynchronously (non-blocking)
                 if (session?.user) {
                     fetchProfile(session.user.id);
+                } else {
+                    setProfileLoading(false);
                 }
             } catch (error) {
                 console.error('Error initializing auth:', error);
                 setUser(null);
                 setProfile(null);
                 setLoading(false);
+                setProfileLoading(false);
                 supabase.auth.signOut(); // Don't await
             }
         };
@@ -96,6 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     setUser(null);
                     setProfile(null);
                     setLoading(false);
+                    setProfileLoading(false);
                     return;
                 }
 
@@ -105,6 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     await fetchProfile(session.user.id);
                 } else {
                     setProfile(null);
+                    setProfileLoading(false);
                 }
                 setLoading(false);
             }
@@ -120,6 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await supabase.auth.signOut();
             setUser(null);
             setProfile(null);
+            setProfileLoading(false);
         } catch (error) {
             console.error('Error signing out:', error);
         }
@@ -128,7 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const isAdmin = profile?.role === 'admin' || profile?.membership_type === 'admin';
 
     return (
-        <AuthContext.Provider value={{ user, profile, loading, signOut, refreshProfile, isAdmin }}>
+        <AuthContext.Provider value={{ user, profile, loading, profileLoading, signOut, refreshProfile, isAdmin }}>
             {children}
         </AuthContext.Provider>
     );
