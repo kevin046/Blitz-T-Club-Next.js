@@ -60,6 +60,13 @@ export default function EventsPage() {
         };
 
         init();
+
+        // Safety timeout to prevent infinite loading
+        const timeoutId = setTimeout(() => {
+            setLoading(false);
+        }, 5000);
+
+        return () => clearTimeout(timeoutId);
     }, []); // Empty dependency array - only run once on mount
 
     const fetchEvents = async () => {

@@ -41,7 +41,7 @@ export default function RootLayout({
           <DynamicNavigation />
           {children}
           <Footer />
-          <DynamicJotformAI />
+          {/* <DynamicJotformAI /> */}
         </Providers>
       </body>
     </html>

@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { FaEnvelope, FaMapMarkerAlt, FaClock, FaUsers, FaCheckCircle, FaExclamationCircle, FaPaperPlane, FaSpinner } from 'react-icons/fa';
 import { FaSquareXTwitter, FaInstagram, FaYoutube } from 'react-icons/fa6';
+import DynamicJotformAI from '@/components/DynamicJotformAI';
 import styles from './contact.module.css';
 
 export default function Contact() {
@@ -172,6 +173,7 @@ export default function Contact() {
                     </div>
                 </div>
             </div>
+            <DynamicJotformAI />
         </div>
     );
 }

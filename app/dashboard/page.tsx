@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { FaUser, FaIdCard, FaCalendarAlt, FaShoppingBag, FaCog, FaSignOutAlt, FaCar, FaMapMarkerAlt, FaEdit, FaExclamationTriangle, FaUserShield, FaStore, FaUsers, FaTachometerAlt } from 'react-icons/fa';
 import MembershipCard from '@/components/MembershipCard';
+import DynamicJotformAI from '@/components/DynamicJotformAI';
 import styles from './dashboard.module.css';
 
 export default function Dashboard() {
@@ -159,6 +160,7 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
+            <DynamicJotformAI />
         </div>
     );
 }

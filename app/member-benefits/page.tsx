@@ -3,6 +3,7 @@
 
 import { FaShieldAlt, FaCar, FaMapMarkerAlt, FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
+import DynamicJotformAI from '@/components/DynamicJotformAI';
 import styles from './member-benefits.module.css';
 
 export default function MemberBenefitsPage() {
@@ -110,6 +111,7 @@ export default function MemberBenefitsPage() {
                     </div>
                 </div>
             </div>
+            <DynamicJotformAI />
         </div>
     );
 }
