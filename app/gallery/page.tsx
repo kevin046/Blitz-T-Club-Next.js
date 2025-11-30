@@ -132,7 +132,7 @@ export default function GalleryPage() {
                         <div className={styles.overlay}>
                             <h3>{video.loading ? 'Loading...' : (video.title || 'Video Unavailable')}</h3>
                             <p className={styles.meta}>
-                                <span><FaCalendar /> {new Date(video.date).toLocaleDateString()}</span>
+                                <span suppressHydrationWarning><FaCalendar /> {new Date(video.date).toLocaleDateString()}</span>
                                 <span><FaClock /> {video.duration || '--:--'}</span>
                             </p>
                             {video.error ? (

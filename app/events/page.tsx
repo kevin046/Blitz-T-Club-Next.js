@@ -121,7 +121,7 @@ export default function EventsPage() {
                 .eq('user_id', user.id)
                 .is('cancelled_at', null);
             setRegistrations(regs || []);
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error registering:', error);
             alert('Failed to register: ' + error.message);
         } finally {

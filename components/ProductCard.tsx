@@ -2,7 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import { FaShoppingCart } from 'react-icons/fa';
 import styles from '../app/shop/shop.module.css';
 
 interface Product {

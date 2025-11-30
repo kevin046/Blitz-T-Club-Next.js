@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { FaTwitter, FaInstagram, FaSquareXTwitter } from 'react-icons/fa6'; // Using fa6 for X icon if available, or fallback
+import { FaInstagram, FaSquareXTwitter } from 'react-icons/fa6'; // Using fa6 for X icon if available, or fallback
 
 export default function Footer() {
     return (

@@ -4,8 +4,18 @@ import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import styles from '../app/dashboard/dashboard.module.css';
 
+interface UserProfile {
+    id: string;
+    full_name: string;
+    member_id?: string;
+    membership_type: string;
+    role?: string;
+    created_at: string;
+    [key: string]: any;
+}
+
 interface MembershipCardProps {
-    profile: any;
+    profile: UserProfile;
 }
 
 export default function MembershipCard({ profile }: MembershipCardProps) {
