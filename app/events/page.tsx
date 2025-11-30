@@ -153,7 +153,7 @@ export default function EventsPage() {
         setIsModalOpen(false);
     };
 
-    if (loading) return <div className={styles.loading}>Loading Events...</div>;
+    // Show page structure immediately, load data in background
 
     return (
         <div className={styles.eventsPage}>
