@@ -21,8 +21,6 @@ const INITIAL_VIDEOS: Video[] = [
     { id: 'z53Q5buS3Bs', category: 'shows', date: '2024-10-04' },
     { id: 'cFuH-K8muxE', category: 'shows', date: '2024-12-07' },
     { id: '1qXbnV3pRZ8', category: 'meetups', date: '2024-10-19' },
-    { id: 'p1dxjAjGzfg', category: 'shows', date: '2025-01-15' },
-    { id: 'HHiLFB_iQGs', category: 'meetups', date: '2025-01-20' },
     { id: 'lA4tmeWR308', category: 'shows', date: '2025-01-25' },
 ];
 
