@@ -33,10 +33,8 @@ export default function Login() {
             if (error) throw error;
 
             setSuccess(true);
-            setTimeout(() => {
-                router.push('/dashboard');
-                router.refresh();
-            }, 1000);
+            // Navigate immediately - no artificial delay
+            router.push('/dashboard');
         } catch (err: any) {
             console.error('Login error:', err);
             if (err.message.includes('Invalid login credentials')) {

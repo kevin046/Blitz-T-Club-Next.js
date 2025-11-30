@@ -39,21 +39,28 @@ export default function EventsPage() {
     useEffect(() => {
         const init = async () => {
             try {
-                const { data: { user } } = await supabase.auth.getUser();
-                setUser(user);
+                // Parallelize: fetch user and events simultaneously
+                const [userResult, eventsResult] = await Promise.all([
+                    supabase.auth.getUser(),
+                    supabase.from('events').select('*').order('date', { ascending: false })
+                ]);
 
+                const user = userResult.data.user;
+                setUser(user);
+                setEvents(eventsResult.data || []);
+
+                // Fetch registrations only if user exists (non-blocking)
                 if (user) {
-                    const { data: regs } = await supabase
+                    supabase
                         .from('event_registrations')
                         .select('*')
                         .eq('user_id', user.id)
-                        .is('cancelled_at', null);
-                    setRegistrations(regs || []);
+                        .is('cancelled_at', null)
+                        .then(({ data }) => setRegistrations(data || []));
                 }
-
-                await fetchEvents();
             } catch (error) {
                 console.error('Error loading events:', error);
+                setEvents([]);
             } finally {
                 setLoading(false);
             }
@@ -61,13 +68,10 @@ export default function EventsPage() {
 
         init();
 
-        // Safety timeout to prevent infinite loading
-        const timeoutId = setTimeout(() => {
-            setLoading(false);
-        }, 5000);
-
+        // Reduced timeout for faster perceived load
+        const timeoutId = setTimeout(() => setLoading(false), 3000);
         return () => clearTimeout(timeoutId);
-    }, []); // Empty dependency array - only run once on mount
+    }, []);
 
     const fetchEvents = async () => {
         try {

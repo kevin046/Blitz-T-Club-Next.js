@@ -70,23 +70,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
                 const { data: { session }, error } = await supabase.auth.getSession();
 
-                if (error) {
-                    throw error;
-                }
+                if (error) throw error;
 
                 setUser(session?.user ?? null);
+                setLoading(false); // Set loading false immediately
 
+                // Fetch profile asynchronously (non-blocking)
                 if (session?.user) {
-                    await fetchProfile(session.user.id);
+                    fetchProfile(session.user.id);
                 }
             } catch (error) {
                 console.error('Error initializing auth:', error);
-                // If refresh token is invalid, clear everything
                 setUser(null);
                 setProfile(null);
-                await supabase.auth.signOut();
-            } finally {
                 setLoading(false);
+                supabase.auth.signOut(); // Don't await
             }
         };
 
