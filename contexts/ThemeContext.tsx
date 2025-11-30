@@ -12,26 +12,19 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setTheme] = useState<Theme>('light');
+    // Default to 'dark' immediately to prevent flash
+    const [theme, setTheme] = useState<Theme>('dark');
 
     useEffect(() => {
-        // Check local storage or system preference
-        const savedTheme = localStorage.getItem('theme') as Theme;
-        if (savedTheme) {
-            setTheme(savedTheme);
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        } else {
-            // Default to dark mode if no preference is saved
-            setTheme('dark');
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
+        // Enforce dark mode on mount
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
     }, []);
 
     const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme);
+        // Disable toggling - always keep dark
+        setTheme('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
     };
 
     return (
