@@ -36,7 +36,7 @@ INSERT INTO vendors (id, name, password_hash, tracking_route, contact_email, sta
 VALUES (
     'ee-auto-uuid'::uuid,
     'EE Auto',
-    'eeauto2024',  -- CHANGE THIS PASSWORD in production!
+    'eeauto',  -- Vendor password
     '/vendor/ee-auto',
     'contact@ee-auto.com',
     'active'
