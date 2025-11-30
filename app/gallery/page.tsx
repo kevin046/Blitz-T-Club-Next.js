@@ -85,7 +85,8 @@ export default function GalleryPage() {
         return result;
     };
 
-    const filteredVideos = filter === 'all' ? videos : videos.filter(v => v.category === filter);
+    const filteredVideos = (filter === 'all' ? videos : videos.filter(v => v.category === filter))
+        .filter(v => !v.error); // Remove unavailable videos
 
     return (
         <div className={styles.galleryPage}>

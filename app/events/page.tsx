@@ -38,31 +38,43 @@ export default function EventsPage() {
 
     useEffect(() => {
         const init = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                setUser(user);
 
-            if (user) {
-                const { data: regs } = await supabase
-                    .from('event_registrations')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .is('cancelled_at', null);
-                setRegistrations(regs || []);
+                if (user) {
+                    const { data: regs } = await supabase
+                        .from('event_registrations')
+                        .select('*')
+                        .eq('user_id', user.id)
+                        .is('cancelled_at', null);
+                    setRegistrations(regs || []);
+                }
+
+                await fetchEvents();
+            } catch (error) {
+                console.error('Error loading events:', error);
+            } finally {
+                setLoading(false);
             }
-
-            await fetchEvents();
-            setLoading(false);
         };
 
         init();
     }, []); // Empty dependency array - only run once on mount
 
     const fetchEvents = async () => {
-        const { data } = await supabase
-            .from('events')
-            .select('*')
-            .order('date', { ascending: false });
-        setEvents(data || []);
+        try {
+            const { data, error } = await supabase
+                .from('events')
+                .select('*')
+                .order('date', { ascending: false });
+
+            if (error) throw error;
+            setEvents(data || []);
+        } catch (error) {
+            console.error('Error fetching events:', error);
+            setEvents([]);
+        }
     };
 
     const handleRegister = async (event: Event) => {
