@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaHome, FaCalendar, FaImages, FaGift, FaEnvelope, FaInfoCircle, FaUserPlus, FaSignInAlt, FaBars, FaTimes, FaTachometerAlt, FaSignOutAlt, FaUserShield, FaStore } from 'react-icons/fa';
+import { FaHome, FaCalendar, FaImages, FaGift, FaEnvelope, FaInfoCircle, FaUserPlus, FaSignInAlt, FaBars, FaTimes, FaTachometerAlt, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Navigation() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
-    const { user, signOut, isAdmin } = useAuth();
+    const { user, signOut } = useAuth();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -98,31 +98,6 @@ export default function Navigation() {
                                 Dashboard
                             </Link>
                         </li>
-                        {/* Admin-only links */}
-                        {isAdmin && (
-                            <>
-                                <li>
-                                    <Link
-                                        href="/admin/dashboard"
-                                        className={pathname === '/admin/dashboard' ? 'active' : ''}
-                                        onClick={closeMenu}
-                                    >
-                                        <FaUserShield />
-                                        Admin Dashboard
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        href="/admin/shop"
-                                        className={pathname === '/admin/shop' ? 'active' : ''}
-                                        onClick={closeMenu}
-                                    >
-                                        <FaStore />
-                                        Admin Shop
-                                    </Link>
-                                </li>
-                            </>
-                        )}
                         <li>
                             <a href="#" onClick={handleSignOut} className="logout-btn">
                                 <FaSignOutAlt />

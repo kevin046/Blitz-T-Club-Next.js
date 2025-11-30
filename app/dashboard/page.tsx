@@ -11,24 +11,15 @@ export default function Dashboard() {
     const router = useRouter();
     const { user, profile, loading, signOut, isAdmin } = useAuth();
 
-    // Redirect if not logged in
+    // Redirect if not logged in (but don't wait for loading)
     if (!loading && !user) {
         router.push('/login');
         return null;
     }
 
-    if (loading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner}></div>
-                <p>Loading your dashboard...</p>
-            </div>
-        );
-    }
+    // Show dashboard immediately, even if profile is still loading
 
-    if (!profile) return null;
-
-    const isProfileIncomplete = !profile.full_name || !profile.phone || !profile.full_address;
+    const isProfileIncomplete = !profile?.full_name || !profile?.phone || !profile?.full_address;
 
     return (
         <div className={styles.dashboardPage}>
