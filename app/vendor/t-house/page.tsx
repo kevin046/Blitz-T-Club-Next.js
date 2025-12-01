@@ -1,7 +1,7 @@
 'use client';
 
 import VendorDashboard from '@/components/VendorDashboard';
-import '../ee-auto/vendor-dashboard.css';
+import '@/components/vendor-dashboard.css';
 
 export default function THouseTrackingPage() {
     const VENDOR_ID = '00000000-0000-0000-0000-000000000003';
