@@ -1,7 +1,7 @@
 'use client';
 
 import VendorDashboard from '@/components/VendorDashboard';
-import '../ee-auto/ee-auto.css'; // Reusing styles
+
 
 export default function DemoVendorTrackingPage() {
     const VENDOR_ID = '00000000-0000-0000-0000-000000000002';

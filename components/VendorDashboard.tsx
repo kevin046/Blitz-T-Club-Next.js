@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
-import './ee-auto.css'; // Reusing the CSS for now, can be renamed to vendor-dashboard.css later
+import './vendor-dashboard.css';
 
 interface DealOption {
     type: string;
