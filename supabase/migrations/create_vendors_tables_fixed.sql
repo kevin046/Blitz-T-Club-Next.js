@@ -31,26 +31,14 @@ CREATE INDEX IF NOT EXISTS idx_vendor_deals_member_id ON vendor_deals(member_id)
 CREATE INDEX IF NOT EXISTS idx_vendor_deals_vendor_id ON vendor_deals(vendor_id);
 CREATE INDEX IF NOT EXISTS idx_vendor_deals_created_at ON vendor_deals(created_at DESC);
 
--- Insert EE Auto vendor
+-- Insert EE Auto vendor with a proper UUID
 INSERT INTO vendors (id, name, password_hash, tracking_route, contact_email, status)
 VALUES (
     '00000000-0000-0000-0000-000000000001'::uuid,
     'EE Auto',
-    'eeauto',  -- Vendor password
+    'eeauto',
     '/vendor/ee-auto',
     'contact@ee-auto.com',
-    'active'
-)
-ON CONFLICT (id) DO NOTHING;
-
--- Insert Demo Vendor
-INSERT INTO vendors (id, name, password_hash, tracking_route, contact_email, status)
-VALUES (
-    '00000000-0000-0000-0000-000000000002'::uuid,
-    'Demo Vendor',
-    'demo123',  -- Vendor password
-    '/vendor/demo-vendor',
-    'contact@demo-vendor.com',
     'active'
 )
 ON CONFLICT (id) DO NOTHING;
