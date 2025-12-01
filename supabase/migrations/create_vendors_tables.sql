@@ -31,28 +31,12 @@ CREATE INDEX IF NOT EXISTS idx_vendor_deals_member_id ON vendor_deals(member_id)
 CREATE INDEX IF NOT EXISTS idx_vendor_deals_vendor_id ON vendor_deals(vendor_id);
 CREATE INDEX IF NOT EXISTS idx_vendor_deals_created_at ON vendor_deals(created_at DESC);
 
--- Insert EE Auto vendor
+-- Insert vendors
 INSERT INTO vendors (id, name, password_hash, tracking_route, contact_email, status)
-VALUES (
-    '00000000-0000-0000-0000-000000000001'::uuid,
-    'EE Auto',
-    'eeauto',  -- Vendor password
-    '/vendor/ee-auto',
-    'contact@ee-auto.com',
-    'active'
-)
-ON CONFLICT (id) DO NOTHING;
-
--- Insert Demo Vendor
-INSERT INTO vendors (id, name, password_hash, tracking_route, contact_email, status)
-VALUES (
-    '00000000-0000-0000-0000-000000000002'::uuid,
-    'Demo Vendor',
-    'demo123',  -- Vendor password
-    '/vendor/demo-vendor',
-    'contact@demo-vendor.com',
-    'active'
-)
+VALUES 
+    ('00000000-0000-0000-0000-000000000001'::uuid, 'EE Auto', 'eeauto', '/vendor/ee-auto', 'contact@ee-auto.com', 'active'),
+    ('00000000-0000-0000-0000-000000000002'::uuid, 'Demo Vendor', 'demo123', '/vendor/demo-vendor', 'demo@example.com', 'active'),
+    ('00000000-0000-0000-0000-000000000003'::uuid, 'T-House', 'thouse', '/vendor/t-house', 'info@thousetoronto.com', 'active')
 ON CONFLICT (id) DO NOTHING;
 
 -- Enable Row Level Security
@@ -60,23 +44,23 @@ ALTER TABLE vendors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vendor_deals ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies for vendors table
-CREATE POLICY "Vendors are viewable by authenticated users"
+CREATE POLICY IF NOT EXISTS "Vendors are viewable by authenticated users"
     ON vendors FOR SELECT
     TO authenticated
     USING (true);
 
 -- Create RLS policies for vendor_deals table
-CREATE POLICY "Vendor deals are viewable by vendor"
+CREATE POLICY IF NOT EXISTS "Vendor deals are viewable by vendor"
     ON vendor_deals FOR SELECT
     TO authenticated
     USING (true);
 
-CREATE POLICY "Vendors can insert their own deals"
+CREATE POLICY IF NOT EXISTS "Vendors can insert their own deals"
     ON vendor_deals FOR INSERT
     TO authenticated
     WITH CHECK (true);
 
-CREATE POLICY "Vendors can update their own deals"
+CREATE POLICY IF NOT EXISTS "Vendors can update their own deals"
     ON vendor_deals FOR UPDATE
     TO authenticated
     USING (true);

@@ -1,0 +1,166 @@
+.verifyPage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.verifyContainer {
+    width: 100%;
+    max-width: 500px;
+}
+
+.verifyBox {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.iconWrapper {
+    margin-bottom: 2rem;
+}
+
+.icon {
+    font-size: 4rem;
+    color: #667eea;
+}
+
+.icon.success {
+    color: #10b981;
+    animation: scaleIn 0.5s ease-out;
+}
+
+.icon.error {
+    color: #ef4444;
+    animation: shake 0.5s ease-out;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-10px);
+    }
+
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+.verifyBox h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #171a20;
+}
+
+.message {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+}
+
+.btn {
+    background: #667eea;
+    color: white;
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btnSecondary {
+    background: transparent;
+    color: #667eea;
+    padding: 0.875rem 2rem;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btnSecondary:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Dark mode support */
+:global(.dark-theme) .verifyBox {
+    background: #1e1e2e;
+}
+
+:global(.dark-theme) .verifyBox h1 {
+    color: #ffffff;
+}
+
+:global(.dark-theme) .message {
+    color: #a0a0a0;
+}
+
+@media (max-width: 768px) {
+    .verifyBox {
+        padding: 2rem;
+    }
+
+    .verifyBox h1 {
+        font-size: 1.5rem;
+    }
+
+    .message {
+        font-size: 1rem;
+    }
+
+    .icon {
+        font-size: 3rem;
+    }
+}

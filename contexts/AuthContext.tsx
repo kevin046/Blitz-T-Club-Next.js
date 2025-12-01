@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setProfile(null);
                 setLoading(false);
                 setProfileLoading(false);
-                supabase.auth.signOut(); // Don't await
+                supabase.auth.signOut({ scope: 'local' }); // Don't await, use local scope
             }
         };
 
@@ -127,7 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const signOut = async () => {
         try {
-            await supabase.auth.signOut();
+            await supabase.auth.signOut({ scope: 'local' });
             setUser(null);
             setProfile(null);
             setProfileLoading(false);

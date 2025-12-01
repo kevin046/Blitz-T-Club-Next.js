@@ -48,7 +48,7 @@ function VerifyMemberContent() {
                     .from('profiles')
                     .select('*')
                     .eq('id', memberIdParam)
-                    .single();
+                    .maybeSingle();
 
                 if (error) throw error;
 
