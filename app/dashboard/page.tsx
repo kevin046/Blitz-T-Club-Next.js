@@ -123,15 +123,42 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {/* Profile Completion Alert */}
-                {isProfileIncomplete && (
+                {/* Email Verification / Profile Completion Alert */}
+                {!user?.email_confirmed_at ? (
+                    <div className={`${styles.dashboardCard} ${styles.verificationAlert}`}>
+                        <div className={styles.cardHeader}>
+                            <h2><FaExclamationTriangle /> Email Not Verified</h2>
+                        </div>
+                        <div className={styles.cardContent}>
+                            <p>Please verify your email address (<strong>{user.email}</strong>) to unlock all features.</p>
+                            <button
+                                className={styles.btn}
+                                onClick={async () => {
+                                    try {
+                                        const { supabase } = await import('@/lib/supabase/client');
+                                        const { error } = await supabase.auth.resend({
+                                            type: 'signup',
+                                            email: user.email!,
+                                        });
+                                        if (error) throw error;
+                                        alert('✅ Verification email sent! Please check your inbox.');
+                                    } catch (err: any) {
+                                        alert(`❌ ${err.message || 'Failed to resend email'}`);
+                                    }
+                                }}
+                            >
+                                Resend Verification Email
+                            </button>
+                        </div>
+                    </div>
+                ) : isProfileIncomplete && (
                     <div className={`${styles.dashboardCard} ${styles.completionAlert}`}>
                         <div className={styles.cardHeader}>
                             <h2><FaExclamationTriangle /> Complete Your Profile</h2>
                         </div>
                         <div className={styles.cardContent}>
                             <p>Please complete your profile to unlock all features.</p>
-                            <button className={styles.btn}>Update Profile</button>
+                            <button className={styles.btn} onClick={() => router.push('/profile')}>Update Profile</button>
                         </div>
                     </div>
                 )}
