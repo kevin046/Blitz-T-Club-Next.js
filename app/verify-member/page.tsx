@@ -133,10 +133,17 @@ function VerifyMemberContent() {
             // Update the scan log with the vendor name/ID
             if (scanId) {
                 try {
-                    await supabase
-                        .from('qr_code_scans')
-                        .update({ vendor_id: matchedVendor.name }) // Using name as per existing data structure
-                        .eq('id', scanId);
+                    // Use API to update to bypass RLS policies
+                    await fetch('/api/scan/update-vendor', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            scan_id: scanId,
+                            vendor_name: matchedVendor.name
+                        }),
+                    });
                 } catch (updateError) {
                     console.error('Failed to update scan log with vendor:', updateError);
                 }
