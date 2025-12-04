@@ -13,20 +13,26 @@ export async function POST(request: Request) {
         const supabaseAdmin = getSupabaseAdmin();
         const { email, password, fullName, username, phoneNumber, dateOfBirth, carModels, address } = await request.json();
 
-        // Generate Member ID
-        const { data: latestMember } = await supabaseAdmin
+        // Generate Member ID - Find first unused number
+        const { data: allMembers } = await supabaseAdmin
             .from('profiles')
-            .select('member_id')
-            .like('member_id', 'BTC%')
-            .order('member_id', { ascending: false })
-            .limit(1);
+            .select('member_id');
+
+        const usedNumbers = new Set<number>();
+        if (allMembers) {
+            allMembers.forEach(m => {
+                if (m.member_id && m.member_id.startsWith('BTC')) {
+                    const num = parseInt(m.member_id.replace('BTC', ''));
+                    if (!isNaN(num)) {
+                        usedNumbers.add(num);
+                    }
+                }
+            });
+        }
 
         let nextNumber = 1;
-        if (latestMember && latestMember.length > 0 && latestMember[0].member_id) {
-            const currentNumber = parseInt(latestMember[0].member_id.replace('BTC', ''));
-            if (!isNaN(currentNumber)) {
-                nextNumber = currentNumber + 1;
-            }
+        while (usedNumbers.has(nextNumber)) {
+            nextNumber++;
         }
 
         const memberId = `BTC${String(nextNumber).padStart(4, '0')}`;

@@ -12,70 +12,70 @@ export default function VerifyPage() {
     const [message, setMessage] = useState('Verifying your email...');
 
     useEffect(() => {
-        const handleEmailVerification = async () => {
-            try {
-                // Check if user is authenticated after email verification
-                const { data: { session }, error } = await supabase.auth.getSession();
+        let mounted = true;
 
-                if (error) {
-                    throw new Error('Failed to verify session');
+        const handleUserVerified = async (user: any) => {
+            try {
+                // User is verified! Check if profile is complete
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profileError) {
+                    console.error('Profile fetch error:', profileError);
                 }
 
-                if (session?.user) {
-                    // User is verified! Check if profile is complete
-                    const { data: profile, error: profileError } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', session.user.id)
-                        .single();
+                // Update user's email_confirmed_at if needed
+                if (user.email_confirmed_at) {
+                    setStatus('success');
+                    setMessage('Email verified successfully! Redirecting to your dashboard...');
 
-                    if (profileError) {
-                        console.error('Profile fetch error:', profileError);
+                    // Update membership status to active if it was pending
+                    if (profile?.membership_status === 'pending') {
+                        await supabase
+                            .from('profiles')
+                            .update({ membership_status: 'active' })
+                            .eq('id', user.id);
                     }
 
-                    // Update user's email_confirmed_at if needed
-                    if (session.user.email_confirmed_at) {
-                        setStatus('success');
-                        setMessage('Email verified successfully! Redirecting to your dashboard...');
-
-                        // Update membership status to active if it was pending
-                        if (profile?.membership_status === 'pending') {
-                            await supabase
-                                .from('profiles')
-                                .update({ membership_status: 'active' })
-                                .eq('id', session.user.id);
-                        }
-
-                        // Redirect to dashboard after 2 seconds
-                        setTimeout(() => {
-                            router.push('/dashboard');
-                        }, 2000);
-                    } else {
-                        throw new Error('Email not confirmed yet');
-                    }
+                    // Redirect to dashboard after 2 seconds
+                    setTimeout(() => {
+                        if (mounted) router.push('/dashboard');
+                    }, 2000);
                 } else {
-                    // No session - might need to wait for the redirect
-                    setMessage('Completing verification...');
-
-                    // Try refreshing the session
-                    setTimeout(async () => {
-                        const { data } = await supabase.auth.refreshSession();
-                        if (data?.session) {
-                            window.location.reload();
-                        } else {
-                            setStatus('error');
-                            setMessage('Verification incomplete. Please try clicking the link in your email again.');
-                        }
-                    }, 3000);
+                    // Should not happen if redirected from email link
+                    throw new Error('Email not confirmed yet');
                 }
             } catch (error: any) {
                 console.error('Verification error:', error);
-                setStatus('error');
-                setMessage(error.message || 'Verification failed. Please try again or contact support.');
+                if (mounted) {
+                    setStatus('error');
+                    setMessage(error.message || 'Verification failed. Please try again or contact support.');
+                }
             }
         };
 
-        handleEmailVerification();
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user && mounted) {
+                await handleUserVerified(session.user);
+            }
+        };
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user && mounted) {
+                await handleUserVerified(session.user);
+            }
+        });
+
+        checkSession();
+
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, [router]);
 
     return (
