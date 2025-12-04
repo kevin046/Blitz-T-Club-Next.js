@@ -98,6 +98,7 @@ export async function POST(request: Request) {
                         membership_status: 'pending',
                         membership_type: 'regular',
                         member_id: memberId,
+                        role: 'member',
                     },
                 ]);
 
@@ -118,7 +119,10 @@ export async function POST(request: Request) {
                     city: address?.city,
                     province: address?.province,
                     postal_code: address?.postalCode,
+                    membership_status: 'pending',
+                    membership_type: 'regular',
                     member_id: memberId,
+                    role: 'member',
                 })
                 .eq('id', data.user.id);
 
