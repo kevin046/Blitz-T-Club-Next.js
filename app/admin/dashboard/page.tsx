@@ -82,14 +82,14 @@ function QRTokenGenerator() {
 
             setMemberInfo(member);
 
-            // Generate a unique token
-            const token = `${memberId}-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+            // Use the member's UUID (id field) for the QR code - this matches the existing format
+            const memberUUID = member.id;
 
-            // Create the verification URL
+            // Create the verification URL matching the existing QR code format
             const baseUrl = window.location.origin;
-            const verificationUrl = `${baseUrl}/verify-member?token=${encodeURIComponent(token)}&member_id=${encodeURIComponent(memberId)}`;
+            const verificationUrl = `${baseUrl}/verify-member?member_id=${encodeURIComponent(memberUUID)}`;
 
-            setGeneratedToken(token);
+            setGeneratedToken(memberUUID);
             setGeneratedUrl(verificationUrl);
         } catch (err: any) {
             setError(err.message || 'Failed to generate token');
@@ -146,13 +146,13 @@ function QRTokenGenerator() {
 
             {generatedToken && (
                 <div className={styles.resultCard}>
-                    <h4><FaCheck /> Token Generated Successfully</h4>
+                    <h4><FaCheck /> QR Code Data Generated Successfully</h4>
 
                     <div className={styles.resultItem}>
-                        <label>Verification Token:</label>
+                        <label>Member UUID (for QR Code):</label>
                         <div className={styles.copyBox}>
                             <code>{generatedToken}</code>
-                            <button onClick={() => copyToClipboard(generatedToken, 'Token')} className={styles.copyBtn}>
+                            <button onClick={() => copyToClipboard(generatedToken, 'Member UUID')} className={styles.copyBtn}>
                                 Copy
                             </button>
                         </div>
