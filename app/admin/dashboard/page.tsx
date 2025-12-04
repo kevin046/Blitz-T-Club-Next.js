@@ -212,6 +212,7 @@ export default function AdminDashboard() {
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'created_at', direction: 'desc' });
     const [editingUser, setEditingUser] = useState<Profile | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [scanLogs, setScanLogs] = useState<any[]>([]);
 
     useEffect(() => {
         if (authLoading || profileLoading) return;
@@ -252,7 +253,8 @@ export default function AdminDashboard() {
                 fetchDashboardStats(),
                 fetchUsers(),
                 fetchEvents(),
-                fetchRegistrations()
+                fetchRegistrations(),
+                fetchScanLogs()
             ]);
         } catch (error) {
             console.error('Error loading dashboard data:', error);
@@ -293,6 +295,15 @@ export default function AdminDashboard() {
             setRegistrations(data || []);
         } catch (error) {
             console.error('Error fetching registrations:', error);
+        }
+    };
+
+    const fetchScanLogs = async () => {
+        try {
+            const data = await fetchWithAuth('/api/admin/scan-logs');
+            setScanLogs(data || []);
+        } catch (error) {
+            console.error('Error fetching scan logs:', error);
         }
     };
 
@@ -427,6 +438,12 @@ export default function AdminDashboard() {
                     onClick={() => setActiveSection('content')}
                 >
                     <FaFileAlt /> Content Management
+                </button>
+                <button
+                    className={`${styles.navItem} ${activeSection === 'scans' ? styles.active : ''}`}
+                    onClick={() => setActiveSection('scans')}
+                >
+                    <FaQrcode /> Scan History
                 </button>
             </aside>
 
@@ -671,6 +688,60 @@ export default function AdminDashboard() {
                             </p>
 
                             <QRTokenGenerator />
+                        </div>
+                    </div>
+                )}
+
+                {activeSection === 'scans' && (
+                    <div className={styles.section}>
+                        <h2><FaQrcode /> QR Code Scan History</h2>
+                        <p style={{ marginBottom: '1.5rem', color: 'var(--color-text-secondary)' }}>
+                            Track all member QR code scans and verification activities
+                        </p>
+
+                        <div className={styles.tableResponsive}>
+                            <table className={styles.dataTable}>
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Member Name</th>
+                                        <th>Member ID</th>
+                                        <th>Email</th>
+                                        <th>Scan Type</th>
+                                        <th>Vendor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {scanLogs.length > 0 ? scanLogs.map(log => (
+                                        <tr key={log.id}>
+                                            <td>{new Date(log.scanned_at).toLocaleString('en-US', {
+                                                timeZone: 'America/New_York',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric',
+                                                hour: 'numeric',
+                                                minute: '2-digit',
+                                                hour12: true
+                                            })}</td>
+                                            <td>{log.profiles?.full_name || '-'}</td>
+                                            <td style={{ fontFamily: 'monospace' }}>{log.profiles?.member_id || '-'}</td>
+                                            <td>{log.profiles?.email || '-'}</td>
+                                            <td>
+                                                <span className={`${styles.statusBadge} ${styles.active}`}>
+                                                    {log.scan_type.replace('_', ' ')}
+                                                </span>
+                                            </td>
+                                            <td>{log.vendors?.name || '-'}</td>
+                                        </tr>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>
+                                                No scan history available
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 )}

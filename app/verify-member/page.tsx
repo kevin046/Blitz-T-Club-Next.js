@@ -54,6 +54,24 @@ function VerifyMemberContent() {
 
                 if (data) {
                     setMember(data);
+
+                    // Log the QR scan
+                    try {
+                        await supabase.from('qr_scan_logs').insert({
+                            member_id: data.id,
+                            scanned_at: new Date().toISOString(),
+                            scan_type: 'member_verification',
+                            user_agent: navigator.userAgent,
+                            additional_data: {
+                                member_name: data.full_name,
+                                member_id_display: data.member_id
+                            }
+                        });
+                    } catch (logError) {
+                        console.error('Failed to log scan:', logError);
+                        // Don't fail verification if logging fails
+                    }
+
                     // Check if membership is active
                     if (data.membership_status === 'active' || data.membership_status === 'approved') {
                         setValid(true);
