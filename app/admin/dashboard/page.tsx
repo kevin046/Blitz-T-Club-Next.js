@@ -25,6 +25,7 @@ interface Profile {
     car_model?: string;
     car_models?: string;
     vehicle_model?: string;
+    license_plate?: string;
 }
 
 interface Event {
@@ -371,7 +372,9 @@ export default function AdminDashboard() {
         const matchesSearch =
             user.full_name?.toLowerCase().includes(userSearch.toLowerCase()) ||
             user.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
-            user.member_id?.toLowerCase().includes(userSearch.toLowerCase());
+            user.member_id?.toLowerCase().includes(userSearch.toLowerCase()) ||
+            user.phone?.toLowerCase().includes(userSearch.toLowerCase()) ||
+            user.license_plate?.toLowerCase().includes(userSearch.toLowerCase());
         const matchesStatus = userStatusFilter === 'all' || user.membership_status === userStatusFilter;
         return matchesSearch && matchesStatus;
     }).sort((a, b) => {
@@ -565,9 +568,11 @@ export default function AdminDashboard() {
                                             { key: 'member_id', label: 'Member ID' },
                                             { key: 'full_name', label: 'Full Name' },
                                             { key: 'email', label: 'Email' },
+                                            { key: 'phone', label: 'Phone' },
                                             { key: 'date_of_birth', label: 'DOB' },
                                             { key: 'full_address', label: 'Address' },
                                             { key: 'car_models', label: 'Car Model' },
+                                            { key: 'license_plate', label: 'License Plate' },
                                             { key: 'membership_status', label: 'Status' },
                                             { key: 'role', label: 'Role' },
                                             { key: 'created_at', label: 'Joined' },
@@ -594,9 +599,11 @@ export default function AdminDashboard() {
                                             <td>{user.member_id || '-'}</td>
                                             <td>{user.full_name}</td>
                                             <td>{user.email || '-'}</td>
+                                            <td>{user.phone || '-'}</td>
                                             <td>{user.date_of_birth ? formatDateEst(user.date_of_birth) : user.dob ? formatDateEst(user.dob) : '-'}</td>
                                             <td>{user.full_address || user.address || '-'}</td>
                                             <td>{user.car_models || user.car_model || user.vehicle_model || '-'}</td>
+                                            <td>{user.license_plate || '-'}</td>
                                             <td><span className={`${styles.statusBadge} ${styles[user.membership_status]}`}>{user.membership_status}</span></td>
                                             <td>{user.role}</td>
                                             <td>{new Date(user.created_at).toLocaleDateString()}</td>
