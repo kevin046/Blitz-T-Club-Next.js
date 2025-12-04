@@ -107,6 +107,7 @@ export async function POST(request: Request) {
             const { error: updateError } = await supabaseAdmin
                 .from('profiles')
                 .update({
+                    email: email,
                     username: username,
                     full_name: fullName,
                     phone: phoneNumber,
