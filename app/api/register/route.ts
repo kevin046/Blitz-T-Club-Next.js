@@ -130,7 +130,24 @@ export async function POST(request: Request) {
         });
     } catch (error: any) {
         console.error('Registration error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+
+        // Handle specific error cases
+        let errorMessage = error.message || 'Registration failed';
+
+        // Check for duplicate username
+        if (error.message?.includes('profiles_username_key') || error.code === '23505') {
+            errorMessage = 'This username is already taken. Please choose a different username.';
+        }
+        // Check for duplicate email
+        else if (error.message?.includes('User already registered')) {
+            errorMessage = 'This email is already registered. Please login or use a different email.';
+        }
+        // Check for invalid email format
+        else if (error.message?.includes('Invalid email')) {
+            errorMessage = 'Please enter a valid email address.';
+        }
+
+        return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 }
 
