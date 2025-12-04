@@ -23,13 +23,27 @@ export default function VerifyEmail() {
                 }
 
                 if (!session) {
-                    // Check URL hash for token (Supabase redirects with hash)
+                    // Check BOTH URL hash AND query parameters for tokens
+                    // (Supabase can use either depending on configuration)
                     const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                    const accessToken = hashParams.get('access_token');
-                    const refreshToken = hashParams.get('refresh_token');
-                    const error = hashParams.get('error');
-                    const errorCode = hashParams.get('error_code');
-                    const errorDescription = hashParams.get('error_description');
+                    const queryParams = new URLSearchParams(window.location.search);
+
+                    let accessToken = hashParams.get('access_token') || queryParams.get('access_token');
+                    let refreshToken = hashParams.get('refresh_token') || queryParams.get('refresh_token');
+                    const error = hashParams.get('error') || queryParams.get('error');
+                    const errorCode = hashParams.get('error_code') || queryParams.get('error_code');
+                    const errorDescription = hashParams.get('error_description') || queryParams.get('error_description');
+                    const token_hash = hashParams.get('token_hash') || queryParams.get('token_hash');
+                    const type = hashParams.get('type') || queryParams.get('type');
+
+                    console.log('Verification tokens:', {
+                        hasAccessToken: !!accessToken,
+                        hasRefreshToken: !!refreshToken,
+                        hasTokenHash: !!token_hash,
+                        type,
+                        error,
+                        errorCode
+                    });
 
                     // Handle errors from Supabase
                     if (error || errorCode) {
@@ -45,8 +59,19 @@ export default function VerifyEmail() {
                         return;
                     }
 
-                    // If we have tokens in the hash, set the session
-                    if (accessToken && refreshToken) {
+                    // Try to verify using token_hash if present (new Supabase method)
+                    if (token_hash && type) {
+                        const { error: verifyError } = await supabase.auth.verifyOtp({
+                            token_hash,
+                            type: type as any,
+                        });
+
+                        if (verifyError) {
+                            throw verifyError;
+                        }
+                    }
+                    // Otherwise use access/refresh tokens if available
+                    else if (accessToken && refreshToken) {
                         const { error: setSessionError } = await supabase.auth.setSession({
                             access_token: accessToken,
                             refresh_token: refreshToken,
@@ -56,7 +81,7 @@ export default function VerifyEmail() {
                             throw setSessionError;
                         }
                     } else {
-                        throw new Error('No session found. Please click the verification link in your email.');
+                        throw new Error('No verification tokens found. Please click the verification link in your email or request a new one.');
                     }
                 }
 
