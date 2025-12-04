@@ -26,8 +26,31 @@ export default function ProfileSettings() {
         license_plate: '',
     });
 
-    const [carModels, setCarModels] = useState<string[]>([]);
-    const [newCarModel, setNewCarModel] = useState('');
+    // Vehicle state - now using vehicles table
+    interface Vehicle {
+        id?: string;
+        model: string;
+        license_plate: string;
+    }
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+    const [newVehicle, setNewVehicle] = useState<Vehicle>({ model: '', license_plate: '' });
+
+    // Fetch vehicles from vehicles table
+    const fetchVehicles = async () => {
+        if (!user) return;
+
+        const { data, error } = await supabase
+            .from('vehicles')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching vehicles:', error);
+        } else if (data) {
+            setVehicles(data);
+        }
+    };
 
     // Populate form data when profile loads
     useEffect(() => {
@@ -42,15 +65,15 @@ export default function ProfileSettings() {
                 postal_code: profile.postal_code || '',
                 license_plate: profile.license_plate || '',
             });
-
-            // Set car models from profile
-            if (profile.car_models && profile.car_models.length > 0) {
-                setCarModels(profile.car_models);
-            } else if (profile.vehicle_model) {
-                setCarModels([profile.vehicle_model]);
-            }
         }
     }, [profile]);
+
+    // Fetch vehicles when user is available
+    useEffect(() => {
+        if (user) {
+            fetchVehicles();
+        }
+    }, [user]);
 
     // Redirect if not authenticated
     useEffect(() => {
@@ -66,15 +89,66 @@ export default function ProfileSettings() {
         });
     };
 
-    const handleAddCarModel = () => {
-        if (newCarModel && !carModels.includes(newCarModel)) {
-            setCarModels([...carModels, newCarModel]);
-            setNewCarModel('');
+    const handleAddVehicle = async () => {
+        if (!newVehicle.model) {
+            setError('Please select a vehicle model');
+            return;
+        }
+
+        if (!user) return;
+
+        try {
+            const { error: insertError } = await supabase
+                .from('vehicles')
+                .insert([{
+                    user_id: user.id,
+                    model: newVehicle.model,
+                    license_plate: newVehicle.license_plate.toUpperCase()
+                }]);
+
+            if (insertError) throw insertError;
+
+            // Refresh vehicles list
+            await fetchVehicles();
+            setNewVehicle({ model: '', license_plate: '' });
+            setError('');
+        } catch (err: any) {
+            setError(err.message || 'Failed to add vehicle');
         }
     };
 
-    const handleRemoveCarModel = (model: string) => {
-        setCarModels(carModels.filter(m => m !== model));
+    const handleUpdateVehiclePlate = async (vehicleId: string, newPlate: string) => {
+        try {
+            const { error: updateError } = await supabase
+                .from('vehicles')
+                .update({ license_plate: newPlate.toUpperCase(), updated_at: new Date().toISOString() })
+                .eq('id', vehicleId);
+
+            if (updateError) throw updateError;
+
+            // Update local state
+            setVehicles(vehicles.map(v =>
+                v.id === vehicleId ? { ...v, license_plate: newPlate.toUpperCase() } : v
+            ));
+        } catch (err: any) {
+            setError(err.message || 'Failed to update license plate');
+        }
+    };
+
+    const handleRemoveVehicle = async (vehicleId: string) => {
+        try {
+            const { error: deleteError } = await supabase
+                .from('vehicles')
+                .delete()
+                .eq('id', vehicleId);
+
+            if (deleteError) throw deleteError;
+
+            // Update local state
+            setVehicles(vehicles.filter(v => v.id !== vehicleId));
+        } catch (err: any) {
+            setError(err.message || 'Failed to remove vehicle');
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -86,6 +160,9 @@ export default function ProfileSettings() {
         try {
             if (!user) throw new Error('Not authenticated');
 
+            // Get vehicle models for backward compatibility with car_models field
+            const vehicleModels = vehicles.map(v => v.model);
+
             const { error: updateError } = await supabase
                 .from('profiles')
                 .update({
@@ -96,9 +173,8 @@ export default function ProfileSettings() {
                     city: formData.city,
                     province: formData.province,
                     postal_code: formData.postal_code,
-                    license_plate: formData.license_plate,
-                    car_models: carModels,
-                    vehicle_model: carModels[0] || '', // Keep first model for backward compatibility
+                    car_models: vehicleModels,
+                    vehicle_model: vehicleModels[0] || '', // Keep first model for backward compatibility
                     full_address: `${formData.street}, ${formData.city}, ${formData.province} ${formData.postal_code}`,
                     updated_at: new Date().toISOString()
                 })
@@ -268,35 +344,41 @@ export default function ProfileSettings() {
                     <div className={styles.section}>
                         <h2><FaCar /> Vehicle Information</h2>
 
-                        <div className={styles.formGrid} style={{ marginBottom: '20px' }}>
-                            <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
-                                <label htmlFor="license_plate">License Plate Number</label>
-                                <input
-                                    type="text"
-                                    id="license_plate"
-                                    name="license_plate"
-                                    value={formData.license_plate}
-                                    onChange={handleChange}
-                                    placeholder="Enter your vehicle license plate"
-                                    style={{ textTransform: 'uppercase' }}
-                                />
-                                <small style={{ color: 'var(--text-secondary)', marginTop: '4px', display: 'block' }}>
-                                    Helps us identify your car during events like lightshows.
-                                </small>
-                            </div>
-                        </div>
-
-                        {/* Current Vehicles */}
-                        {carModels.length > 0 && (
+                        {/* Current Vehicles with License Plates */}
+                        {vehicles.length > 0 && (
                             <div className={styles.currentVehicles}>
                                 <h3>Your Tesla Vehicles:</h3>
                                 <div className={styles.vehiclesList}>
-                                    {carModels.map((model, index) => (
-                                        <div key={index} className={styles.vehicleItem}>
-                                            <span><FaCar /> {model}</span>
+                                    {vehicles.map((vehicle) => (
+                                        <div key={vehicle.id} className={styles.vehicleItem}>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                                                    <FaCar />
+                                                    <strong>{vehicle.model}</strong>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                                        License Plate:
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={vehicle.license_plate || ''}
+                                                        onChange={(e) => handleUpdateVehiclePlate(vehicle.id!, e.target.value)}
+                                                        placeholder="ABC 123"
+                                                        style={{
+                                                            padding: '4px 8px',
+                                                            borderRadius: '4px',
+                                                            border: '1px solid var(--border-color)',
+                                                            textTransform: 'uppercase',
+                                                            fontSize: '0.9rem',
+                                                            maxWidth: '120px'
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
                                             <button
                                                 type="button"
-                                                onClick={() => handleRemoveCarModel(model)}
+                                                onClick={() => handleRemoveVehicle(vehicle.id!)}
                                                 className={styles.removeBtn}
                                                 title="Remove vehicle"
                                             >
@@ -309,17 +391,16 @@ export default function ProfileSettings() {
                         )}
 
                         {/* Add New Vehicle */}
-                        <div className={styles.formGrid}>
+                        <div className={styles.formGrid} style={{ marginTop: '20px' }}>
                             <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
-                                <label htmlFor="new_vehicle_model">Add Tesla Model</label>
+                                <label>Add a New Vehicle</label>
                                 <div className={styles.addVehicleContainer}>
                                     <select
-                                        id="new_vehicle_model"
-                                        value={newCarModel}
-                                        onChange={(e) => setNewCarModel(e.target.value)}
+                                        value={newVehicle.model}
+                                        onChange={(e) => setNewVehicle({ ...newVehicle, model: e.target.value })}
                                         className={styles.vehicleSelect}
                                     >
-                                        <option value="">Select Model to Add</option>
+                                        <option value="">Select Tesla Model</option>
                                         <option value="Model S">Model S</option>
                                         <option value="Model 3">Model 3</option>
                                         <option value="Model 3 Highland">Model 3 Highland</option>
@@ -329,11 +410,24 @@ export default function ProfileSettings() {
                                         <option value="Cybertruck">Cybertruck</option>
                                         <option value="Roadster">Roadster</option>
                                     </select>
+                                    <input
+                                        type="text"
+                                        value={newVehicle.license_plate}
+                                        onChange={(e) => setNewVehicle({ ...newVehicle, license_plate: e.target.value })}
+                                        placeholder="License Plate (Optional)"
+                                        style={{
+                                            padding: '12px',
+                                            borderRadius: '8px',
+                                            border: '1px solid var(--border-color)',
+                                            textTransform: 'uppercase',
+                                            flex: '0 0 180px'
+                                        }}
+                                    />
                                     <button
                                         type="button"
-                                        onClick={handleAddCarModel}
+                                        onClick={handleAddVehicle}
                                         className={styles.addBtn}
-                                        disabled={!newCarModel || carModels.includes(newCarModel)}
+                                        disabled={!newVehicle.model}
                                     >
                                         Add Vehicle
                                     </button>
