@@ -1,8 +1,17 @@
+'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { FaInstagram, FaSquareXTwitter } from 'react-icons/fa6'; // Using fa6 for X icon if available, or fallback
 
 export default function Footer() {
+    const pathname = usePathname();
+    const isDashboard = pathname?.startsWith('/admin') || pathname?.startsWith('/vendor');
+
+    if (isDashboard) {
+        return null;
+    }
+
     return (
         <footer>
             <div className="footer-content">
