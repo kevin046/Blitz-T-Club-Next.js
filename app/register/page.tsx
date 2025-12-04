@@ -124,8 +124,8 @@ export default function Register() {
                 throw new Error(data.error || 'Registration failed');
             }
 
-            // Redirect to verify email page
-            router.push('/verify-email?email=' + encodeURIComponent(formData.email));
+            // Success! Redirect to login page with message
+            router.push('/login?registered=true');
         } catch (err: any) {
             console.error('Registration error:', err);
             setError(err.message);

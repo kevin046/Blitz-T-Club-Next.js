@@ -48,7 +48,7 @@ export default function Dashboard() {
 
     // Show dashboard immediately, even if profile is still loading
 
-    const isProfileIncomplete = !profile?.full_name || !profile?.phone || !profile?.full_address;
+    const isProfileIncomplete = !profile?.full_name || !profile?.phone || (!profile?.full_address && !profile?.street);
 
     return (
         <div className={styles.dashboardPage}>

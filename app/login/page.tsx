@@ -73,6 +73,11 @@ function LoginContent() {
                     </div>
 
                     <form className={styles.loginForm} onSubmit={handleSubmit}>
+                        {searchParams.get('registered') === 'true' && (
+                            <div className={styles.formSuccess}>
+                                ✅ Registration successful! Please check your email to verify your account before logging in.
+                            </div>
+                        )}
                         {error && <div className={styles.formError}>{error}</div>}
 
                         <div className={styles.formGroup}>
