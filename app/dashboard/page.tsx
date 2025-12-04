@@ -79,7 +79,9 @@ export default function Dashboard() {
                         )}
                         <div className={styles.statusIndicators}>
                             <div className={styles.statusItem}>
-                                <span className={styles.statusText}>{profile?.membership_type === 'premium' ? 'Premium Member' : 'Standard Member'}</span>
+                                <span className={styles.statusText}>
+                                    {isAdmin ? 'Admin' : (profile?.membership_type === 'premium' ? 'Premium Member' : 'Standard Member')}
+                                </span>
                             </div>
                         </div>
                     </div>
