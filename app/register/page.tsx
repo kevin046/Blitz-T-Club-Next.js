@@ -124,8 +124,8 @@ export default function Register() {
                 throw new Error(data.error || 'Registration failed');
             }
 
-            // Success! Redirect to login page with message
-            router.push('/login?registered=true');
+            // Success! Redirect to success page
+            router.push('/registration-success');
         } catch (err: any) {
             console.error('Registration error:', err);
             setError(err.message);

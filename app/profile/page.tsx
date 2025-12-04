@@ -39,7 +39,12 @@ export default function ProfileSettings() {
 
     // Fetch vehicles from vehicles table
     const fetchVehicles = async () => {
-        if (!user) return;
+        if (!user) {
+            console.log('fetchVehicles: No user found');
+            return;
+        }
+
+        console.log('fetchVehicles: Fetching for user', user.id);
 
         try {
             // 1. Try to get vehicles from the dedicated table
@@ -49,7 +54,12 @@ export default function ProfileSettings() {
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: true });
 
-            if (vehiclesError) throw vehiclesError;
+            if (vehiclesError) {
+                console.error('fetchVehicles: Error fetching from vehicles table:', vehiclesError);
+                throw vehiclesError;
+            }
+
+            console.log('fetchVehicles: Found vehicles in table:', vehiclesData);
 
             // 2. If vehicles found, use them
             if (vehiclesData && vehiclesData.length > 0) {
@@ -57,7 +67,7 @@ export default function ProfileSettings() {
             }
             // 3. If NO vehicles found, check legacy profile data and migrate it
             else {
-                console.log('No vehicles in table, checking legacy profile data...');
+                console.log('fetchVehicles: No vehicles in table, checking legacy profile data...');
                 const { data: profileData, error: profileError } = await supabase
                     .from('profiles')
                     .select('car_models, license_plate')
@@ -65,9 +75,11 @@ export default function ProfileSettings() {
                     .single();
 
                 if (profileError) {
-                    console.error('Error fetching profile:', profileError);
+                    console.error('fetchVehicles: Error fetching profile:', profileError);
                     return;
                 }
+
+                console.log('fetchVehicles: Profile data found:', profileData);
 
                 if (profileData?.car_models && profileData.car_models.length > 0) {
                     // Prepare vehicles to insert
@@ -80,7 +92,7 @@ export default function ProfileSettings() {
                         color: 'Unknown'
                     }));
 
-                    console.log('Migrating legacy vehicles:', vehiclesToInsert);
+                    console.log('fetchVehicles: Migrating legacy vehicles:', vehiclesToInsert);
 
                     // Insert into vehicles table
                     const { data: newVehicles, error: insertError } = await supabase
@@ -89,15 +101,17 @@ export default function ProfileSettings() {
                         .select();
 
                     if (insertError) {
-                        console.error('Error migrating vehicles:', insertError);
+                        console.error('fetchVehicles: Error migrating vehicles:', insertError);
                     } else if (newVehicles) {
                         setVehicles(newVehicles);
-                        console.log('Migration successful!');
+                        console.log('fetchVehicles: Migration successful!', newVehicles);
                     }
+                } else {
+                    console.log('fetchVehicles: No legacy car_models found in profile');
                 }
             }
         } catch (error) {
-            console.error('Error in fetchVehicles:', error);
+            console.error('fetchVehicles: Unexpected error:', error);
         }
     };
 
