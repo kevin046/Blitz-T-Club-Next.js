@@ -48,10 +48,10 @@ export async function GET(request: NextRequest) {
 
         console.log('[Admin Users API] Admin verified, fetching users from profiles...');
 
-        // Fetch all users from profiles table
+        // Fetch all users from profiles table with their vehicles
         const { data: users, error: fetchError } = await supabaseAdmin
             .from('profiles')
-            .select('*')
+            .select('*, vehicles(*)')
             .order('created_at', { ascending: false });
 
         if (fetchError) {

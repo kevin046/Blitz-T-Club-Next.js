@@ -24,6 +24,7 @@ interface Profile {
     address?: string;
     car_model?: string;
     car_models?: string;
+    vehicles?: { model: string; license_plate: string }[];
     vehicle_model?: string;
     license_plate?: string;
 }
@@ -374,7 +375,8 @@ export default function AdminDashboard() {
             user.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
             user.member_id?.toLowerCase().includes(userSearch.toLowerCase()) ||
             user.phone?.toLowerCase().includes(userSearch.toLowerCase()) ||
-            user.license_plate?.toLowerCase().includes(userSearch.toLowerCase());
+            user.license_plate?.toLowerCase().includes(userSearch.toLowerCase()) ||
+            user.vehicles?.some(v => v.license_plate?.toLowerCase().includes(userSearch.toLowerCase()));
         const matchesStatus = userStatusFilter === 'all' || user.membership_status === userStatusFilter;
         return matchesSearch && matchesStatus;
     }).sort((a, b) => {
@@ -602,8 +604,30 @@ export default function AdminDashboard() {
                                             <td>{user.phone || '-'}</td>
                                             <td>{user.date_of_birth ? formatDateEst(user.date_of_birth) : user.dob ? formatDateEst(user.dob) : '-'}</td>
                                             <td>{user.full_address || user.address || '-'}</td>
-                                            <td>{user.car_models || user.car_model || user.vehicle_model || '-'}</td>
-                                            <td>{user.license_plate || '-'}</td>
+                                            <td>
+                                                {user.vehicles && user.vehicles.length > 0 ? (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+                                                        {user.vehicles.map((v, i) => (
+                                                            <span key={i}>{v.model}</span>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    user.car_models || user.car_model || user.vehicle_model || '-'
+                                                )}
+                                            </td>
+                                            <td>
+                                                {user.vehicles && user.vehicles.length > 0 ? (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+                                                        {user.vehicles.map((v, i) => (
+                                                            <span key={i} style={{ fontFamily: 'monospace' }}>
+                                                                {v.license_plate || '-'}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    user.license_plate || '-'
+                                                )}
+                                            </td>
                                             <td><span className={`${styles.statusBadge} ${styles[user.membership_status]}`}>{user.membership_status}</span></td>
                                             <td>{user.role}</td>
                                             <td>{new Date(user.created_at).toLocaleDateString()}</td>
