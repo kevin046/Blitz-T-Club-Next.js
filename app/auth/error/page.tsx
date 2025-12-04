@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import styles from './auth-error.module.css';
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [email, setEmail] = useState('');
@@ -50,47 +50,60 @@ export default function AuthErrorPage() {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.card}>
-                <div className={styles.icon}>⚠️</div>
-                <h1 className={styles.title}>Authentication Error</h1>
-                <p className={styles.errorMessage}>{getErrorMessage()}</p>
+        <div className={styles.card}>
+            <div className={styles.icon}>⚠️</div>
+            <h1 className={styles.title}>Authentication Error</h1>
+            <p className={styles.errorMessage}>{getErrorMessage()}</p>
 
-                {errorCode === 'otp_expired' && (
-                    <div className={styles.resendSection}>
-                        <p className={styles.instruction}>
-                            Enter your email address to receive a new verification link:
-                        </p>
-                        <form onSubmit={handleResendEmail} className={styles.form}>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="your.email@example.com"
-                                className={styles.input}
-                                required
-                            />
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={styles.button}
-                            >
-                                {loading ? 'Sending...' : 'Resend Verification Email'}
-                            </button>
-                        </form>
-                        {message && <p className={styles.message}>{message}</p>}
-                    </div>
-                )}
-
-                <div className={styles.actions}>
-                    <button onClick={() => router.push('/login')} className={styles.linkButton}>
-                        Go to Login
-                    </button>
-                    <button onClick={() => router.push('/register')} className={styles.linkButton}>
-                        Create New Account
-                    </button>
+            {errorCode === 'otp_expired' && (
+                <div className={styles.resendSection}>
+                    <p className={styles.instruction}>
+                        Enter your email address to receive a new verification link:
+                    </p>
+                    <form onSubmit={handleResendEmail} className={styles.form}>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="your.email@example.com"
+                            className={styles.input}
+                            required
+                        />
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={styles.button}
+                        >
+                            {loading ? 'Sending...' : 'Resend Verification Email'}
+                        </button>
+                    </form>
+                    {message && <p className={styles.message}>{message}</p>}
                 </div>
+            )}
+
+            <div className={styles.actions}>
+                <button onClick={() => router.push('/login')} className={styles.linkButton}>
+                    Go to Login
+                </button>
+                <button onClick={() => router.push('/register')} className={styles.linkButton}>
+                    Create New Account
+                </button>
             </div>
+        </div>
+    );
+}
+
+export default function AuthErrorPage() {
+    return (
+        <div className={styles.container}>
+            <Suspense fallback={
+                <div className={styles.card}>
+                    <div className={styles.icon}>⏳</div>
+                    <h1 className={styles.title}>Loading...</h1>
+                </div>
+            }>
+                <AuthErrorContent />
+            </Suspense>
         </div>
     );
 }
