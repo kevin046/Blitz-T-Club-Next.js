@@ -45,6 +45,143 @@ interface Registration {
 
 import { useAuth } from '@/contexts/AuthContext';
 
+// QR Token Generator Component
+function QRTokenGenerator() {
+    const [memberId, setMemberId] = useState('');
+    const [generatedToken, setGeneratedToken] = useState('');
+    const [generatedUrl, setGeneratedUrl] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [memberInfo, setMemberInfo] = useState<any>(null);
+
+    const generateToken = async () => {
+        if (!memberId.trim()) {
+            setError('Please enter a valid Member ID');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+        setGeneratedToken('');
+        setGeneratedUrl('');
+        setMemberInfo(null);
+
+        try {
+            // First, verify the member exists
+            const { data: member, error: memberError } = await supabase
+                .from('profiles')
+                .select('id, full_name, member_id, email')
+                .eq('member_id', memberId.trim())
+                .single();
+
+            if (memberError || !member) {
+                setError(`Member ID "${memberId}" not found`);
+                setLoading(false);
+                return;
+            }
+
+            setMemberInfo(member);
+
+            // Generate a unique token
+            const token = `${memberId}-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+
+            // Create the verification URL
+            const baseUrl = window.location.origin;
+            const verificationUrl = `${baseUrl}/verify-member?token=${encodeURIComponent(token)}&member_id=${encodeURIComponent(memberId)}`;
+
+            setGeneratedToken(token);
+            setGeneratedUrl(verificationUrl);
+        } catch (err: any) {
+            setError(err.message || 'Failed to generate token');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const copyToClipboard = (text: string, label: string) => {
+        navigator.clipboard.writeText(text);
+        alert(`${label} copied to clipboard!`);
+    };
+
+    return (
+        <div className={styles.qrGenerator}>
+            <div className={styles.inputGroup}>
+                <label htmlFor="memberId">Member ID</label>
+                <div className={styles.inputWithButton}>
+                    <input
+                        type="text"
+                        id="memberId"
+                        value={memberId}
+                        onChange={(e) => setMemberId(e.target.value)}
+                        placeholder="e.g., BTC0001"
+                        className={styles.memberIdInput}
+                        onKeyPress={(e) => e.key === 'Enter' && generateToken()}
+                    />
+                    <button
+                        onClick={generateToken}
+                        disabled={loading || !memberId.trim()}
+                        className={styles.generateBtn}
+                    >
+                        {loading ? 'Generating...' : 'Generate Token'}
+                    </button>
+                </div>
+            </div>
+
+            {error && (
+                <div className={styles.errorMessage}>
+                    <FaTimes /> {error}
+                </div>
+            )}
+
+            {memberInfo && (
+                <div className={styles.memberInfoCard}>
+                    <h4><FaUserCheck /> Member Found</h4>
+                    <div className={styles.memberDetails}>
+                        <p><strong>Name:</strong> {memberInfo.full_name}</p>
+                        <p><strong>Member ID:</strong> {memberInfo.member_id}</p>
+                        <p><strong>Email:</strong> {memberInfo.email}</p>
+                    </div>
+                </div>
+            )}
+
+            {generatedToken && (
+                <div className={styles.resultCard}>
+                    <h4><FaCheck /> Token Generated Successfully</h4>
+
+                    <div className={styles.resultItem}>
+                        <label>Verification Token:</label>
+                        <div className={styles.copyBox}>
+                            <code>{generatedToken}</code>
+                            <button onClick={() => copyToClipboard(generatedToken, 'Token')} className={styles.copyBtn}>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className={styles.resultItem}>
+                        <label>Verification URL:</label>
+                        <div className={styles.copyBox}>
+                            <code className={styles.urlCode}>{generatedUrl}</code>
+                            <button onClick={() => copyToClipboard(generatedUrl, 'URL')} className={styles.copyBtn}>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className={styles.instructions}>
+                        <h5>Instructions:</h5>
+                        <ol>
+                            <li>Copy the verification URL above</li>
+                            <li>Use a QR code generator (e.g., qr-code-generator.com) to create a QR code from this URL</li>
+                            <li>The member can scan this QR code to verify their membership</li>
+                        </ol>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ... imports ...
 
 export default function AdminDashboard() {
@@ -518,6 +655,22 @@ export default function AdminDashboard() {
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                )}
+
+                {activeSection === 'content' && (
+                    <div className={styles.section}>
+                        <h2>Content Management</h2>
+
+                        {/* QR Code Token Generator */}
+                        <div className={styles.qrGeneratorCard}>
+                            <h3><FaQrcode /> Manual QR Code Token Generator</h3>
+                            <p className={styles.description}>
+                                Generate a verification token for a specific member ID. This token can be used to manually create QR codes for member verification.
+                            </p>
+
+                            <QRTokenGenerator />
                         </div>
                     </div>
                 )}

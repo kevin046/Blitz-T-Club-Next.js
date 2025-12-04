@@ -697,3 +697,189 @@
     opacity: 1;
     color: #00e676;
 }
+/* QR Code Generator Styles */
+.qrGeneratorCard {
+    background: var(--color-background-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-top: 1.5rem;
+}
+
+.qrGeneratorCard h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
+}
+
+.qrGeneratorCard .description {
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.qrGenerator {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.inputGroup label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
+}
+
+.inputWithButton {
+    display: flex;
+    gap: 1rem;
+}
+
+.memberIdInput {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+}
+
+.memberIdInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(232, 33, 39, 0.1);
+}
+
+.generateBtn {
+    padding: 0.75rem 2rem;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.generateBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.generateBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.memberInfoCard {
+    background: rgba(34, 211, 153, 0.1);
+    border: 1px solid #22d399;
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+}
+
+.memberInfoCard h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #22d399;
+    margin-bottom: 1rem;
+}
+
+.memberDetails p {
+    margin: 0.5rem 0;
+    color: var(--color-text-primary);
+}
+
+.resultCard {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+}
+
+.resultCard h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #22d399;
+    margin-bottom: 1.5rem;
+}
+
+.resultItem {
+    margin-bottom: 1.5rem;
+}
+
+.resultItem label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
+}
+
+.copyBox {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    background: var(--color-background-gray);
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.copyBox code {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    word-break: break-all;
+}
+
+.urlCode {
+    font-size: 0.85rem !important;
+}
+
+.copyBtn {
+    padding: 0.5rem 1rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.copyBtn:hover {
+    background: #c41e1e;
+    transform: translateY(-1px);
+}
+
+.instructions {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-top: 1rem;
+}
+
+.instructions h5 {
+    color: var(--color-text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.instructions ol {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: var(--color-text-secondary);
+}
+
+.instructions li {
+    margin: 0.5rem 0;
+}
