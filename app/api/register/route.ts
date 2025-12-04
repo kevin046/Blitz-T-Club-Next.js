@@ -132,10 +132,10 @@ export async function POST(request: Request) {
         // Insert vehicles into the dedicated 'vehicles' table
         if (carModels && carModels.length > 0) {
             // First, delete any existing vehicles for this user to avoid duplicates if re-registering
-            await supabaseAdmin.from('vehicles').delete().eq('user_id', data.user.id);
+            await supabaseAdmin.from('vehicles').delete().eq('user_id', data.user!.id);
 
             const vehiclesToInsert = carModels.map((model: string) => ({
-                user_id: data.user.id,
+                user_id: data.user!.id,
                 model: model,
                 // If there's only one car, assign the license plate to it. 
                 // If multiple cars, we can't know which one it belongs to, so maybe leave blank or assign to first?
