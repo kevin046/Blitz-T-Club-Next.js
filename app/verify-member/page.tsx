@@ -27,6 +27,7 @@ function VerifyMemberContent() {
     const [valid, setValid] = useState(false);
     const [member, setMember] = useState<MemberProfile | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [scanId, setScanId] = useState<string | null>(null);
 
     // Vendor authentication state
     const [showVendorAuth, setShowVendorAuth] = useState(false);
@@ -57,12 +58,20 @@ function VerifyMemberContent() {
 
                     // Log the QR scan
                     try {
-                        await supabase.from('qr_code_scans').insert({
-                            member_id: data.id,
-                            member_id_string: data.member_id,
-                            vendor_id: null,
-                            device_info: navigator.userAgent
-                        });
+                        const { data: scanData, error: scanError } = await supabase
+                            .from('qr_code_scans')
+                            .insert({
+                                member_id: data.id,
+                                member_id_string: data.member_id,
+                                vendor_id: null,
+                                device_info: navigator.userAgent
+                            })
+                            .select()
+                            .single();
+
+                        if (scanData) {
+                            setScanId(scanData.id);
+                        }
                     } catch (logError) {
                         console.error('Failed to log scan:', logError);
                         // Don't fail verification if logging fails
@@ -119,6 +128,18 @@ function VerifyMemberContent() {
                 setVendorAuthError('Invalid vendor password. Please try again.');
                 setVendorAuthLoading(false);
                 return;
+            }
+
+            // Update the scan log with the vendor name/ID
+            if (scanId) {
+                try {
+                    await supabase
+                        .from('qr_code_scans')
+                        .update({ vendor_id: matchedVendor.name }) // Using name as per existing data structure
+                        .eq('id', scanId);
+                } catch (updateError) {
+                    console.error('Failed to update scan log with vendor:', updateError);
+                }
             }
 
             // Store vendor session
