@@ -213,7 +213,7 @@ export default function Register() {
                         <div className={styles.formGroup}>
                             <label><FaCar /> Tesla Models You Own</label>
                             <div className={styles.checkboxGroup}>
-                                {['Model 3', 'Model 3 (Highland)', 'Model Y', 'Model Y (Juniper)', 'Model S', 'Model X', 'Cybertruck'].map((model) => (
+                                {['Model 3', 'Model 3 Highland', 'Model Y', 'Model Y Juniper', 'Model S', 'Model X', 'Cybertruck', 'Roadster'].map((model) => (
                                     <div key={model} className={styles.checkboxOption}>
                                         <input
                                             type="checkbox"

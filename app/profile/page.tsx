@@ -301,8 +301,10 @@ export default function ProfileSettings() {
                                         <option value="">Select Model to Add</option>
                                         <option value="Model S">Model S</option>
                                         <option value="Model 3">Model 3</option>
+                                        <option value="Model 3 Highland">Model 3 Highland</option>
                                         <option value="Model X">Model X</option>
                                         <option value="Model Y">Model Y</option>
+                                        <option value="Model Y Juniper">Model Y Juniper</option>
                                         <option value="Cybertruck">Cybertruck</option>
                                         <option value="Roadster">Roadster</option>
                                     </select>
