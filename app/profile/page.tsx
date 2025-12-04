@@ -13,6 +13,8 @@ export default function ProfileSettings() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
+    const [resendLoading, setResendLoading] = useState(false);
+    const [resendMessage, setResendMessage] = useState('');
 
     // Form state
     const [formData, setFormData] = useState({
@@ -87,6 +89,29 @@ export default function ProfileSettings() {
             ...formData,
             [e.target.name]: e.target.value
         });
+    };
+
+    const handleResendVerification = async () => {
+        if (!user?.email) return;
+
+        setResendLoading(true);
+        setResendMessage('');
+
+        try {
+            const { error } = await supabase.auth.resend({
+                type: 'signup',
+                email: user.email,
+            });
+
+            if (error) throw error;
+
+            setResendMessage('✅ Verification email sent! Please check your inbox.');
+            setTimeout(() => setResendMessage(''), 5000);
+        } catch (err: any) {
+            setResendMessage(`❌ ${err.message || 'Failed to resend email'}`);
+        } finally {
+            setResendLoading(false);
+        }
     };
 
     const handleAddVehicle = async () => {
@@ -229,6 +254,34 @@ export default function ProfileSettings() {
                     <h1><FaUser /> Profile Settings</h1>
                     <p>Update your personal information and preferences</p>
                 </div>
+
+                {/* Email Verification Banner */}
+                {user && !user.email_confirmed_at && (
+                    <div className={styles.verificationBanner}>
+                        <div className={styles.bannerContent}>
+                            <div className={styles.bannerIcon}>⚠️</div>
+                            <div className={styles.bannerText}>
+                                <h3>Email Not Verified</h3>
+                                <p>
+                                    Please verify your email address (<strong>{user.email}</strong>) to unlock all features.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleResendVerification}
+                                disabled={resendLoading}
+                                className={styles.resendBtn}
+                            >
+                                {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+                            </button>
+                        </div>
+                        {resendMessage && (
+                            <div className={styles.resendMessage}>
+                                {resendMessage}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {success && (
                     <div className={styles.successMessage}>

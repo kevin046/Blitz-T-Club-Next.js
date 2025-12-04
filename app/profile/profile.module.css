@@ -306,3 +306,105 @@
         flex-direction: column;
     }
 }
+
+/* Email Verification Banner */
+.verificationBanner {
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.1) 0%, rgba(255, 100, 0, 0.1) 100%);
+    border: 2px solid rgba(255, 165, 0, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bannerContent {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.bannerIcon {
+    font-size: 2rem;
+    animation: pulse 2s infinite;
+}
+
+.bannerText {
+    flex: 1;
+    min-width: 250px;
+}
+
+.bannerText h3 {
+    color: var(--color-warning);
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.bannerText p {
+    color: var(--color-text-secondary);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.bannerText strong {
+    color: var(--color-text-primary);
+}
+
+.resendBtn {
+    padding: 0.7rem 1.5rem;
+    background: linear-gradient(135deg, #ff8800 0%, #ff6600 100%);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.resendBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 136, 0, 0.4);
+}
+
+.resendBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.resendMessage {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--color-primary);
+    color: var(--color-text-primary);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .bannerContent {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .bannerText {
+        min-width: 100%;
+    }
+
+    .resendBtn {
+        width: 100%;
+    }
+}
+
