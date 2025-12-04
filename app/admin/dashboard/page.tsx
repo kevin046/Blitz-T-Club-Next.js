@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { FaTachometerAlt, FaUsersCog, FaCalendarAlt, FaFileAlt, FaCogs, FaUsers, FaCalendarCheck, FaUserPlus, FaUserCheck, FaUserClock, FaUserSlash, FaFileExport, FaQrcode, FaCalendarDay, FaCar, FaIdCard, FaEnvelope, FaSearch, FaPlus, FaEdit, FaTrash, FaCheck, FaTimes, FaBoxOpen, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
@@ -215,6 +215,12 @@ export default function AdminDashboard() {
     const [editingUser, setEditingUser] = useState<Profile | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [scanLogs, setScanLogs] = useState<any[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    // Refs for synchronized scrolling
+    const topScrollRef = useRef<HTMLDivElement>(null);
+    const tableScrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (authLoading || profileLoading) return;
@@ -368,6 +374,11 @@ export default function AdminDashboard() {
         }
     };
 
+    // Reset pagination when search or filter changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [userSearch, userStatusFilter]);
+
     // Filtering Logic
     const filteredUsers = users.filter(user => {
         const matchesSearch =
@@ -375,8 +386,16 @@ export default function AdminDashboard() {
             user.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
             user.member_id?.toLowerCase().includes(userSearch.toLowerCase()) ||
             user.phone?.toLowerCase().includes(userSearch.toLowerCase()) ||
+            user.date_of_birth?.includes(userSearch) ||
+            user.dob?.includes(userSearch) ||
+            user.full_address?.toLowerCase().includes(userSearch.toLowerCase()) ||
+            user.address?.toLowerCase().includes(userSearch.toLowerCase()) ||
             user.license_plate?.toLowerCase().includes(userSearch.toLowerCase()) ||
-            user.vehicles?.some(v => v.license_plate?.toLowerCase().includes(userSearch.toLowerCase()));
+            (Array.isArray(user.car_models) ? user.car_models.join(' ').toLowerCase().includes(userSearch.toLowerCase()) : user.car_models?.toLowerCase().includes(userSearch.toLowerCase())) ||
+            user.vehicles?.some(v =>
+                v.license_plate?.toLowerCase().includes(userSearch.toLowerCase()) ||
+                v.model?.toLowerCase().includes(userSearch.toLowerCase())
+            );
         const matchesStatus = userStatusFilter === 'all' || user.membership_status === userStatusFilter;
         return matchesSearch && matchesStatus;
     }).sort((a, b) => {
@@ -413,6 +432,43 @@ export default function AdminDashboard() {
                     !!reg.cancelled_at;
         return matchesSearch && matchesEvent && matchesStatus;
     });
+
+    // Sync scroll handlers
+    useEffect(() => {
+        const topScroll = topScrollRef.current;
+        const tableScroll = tableScrollRef.current;
+
+        if (!topScroll || !tableScroll) return;
+
+        // Sync width
+        const syncWidth = () => {
+            if (topScroll.firstChild && tableScroll) {
+                (topScroll.firstChild as HTMLElement).style.width = `${tableScroll.scrollWidth}px`;
+            }
+        };
+
+        // Initial sync
+        syncWidth();
+        // Sync on resize
+        window.addEventListener('resize', syncWidth);
+
+        const handleTopScroll = () => {
+            if (tableScroll) tableScroll.scrollLeft = topScroll.scrollLeft;
+        };
+
+        const handleTableScroll = () => {
+            if (topScroll) topScroll.scrollLeft = tableScroll.scrollLeft;
+        };
+
+        topScroll.addEventListener('scroll', handleTopScroll);
+        tableScroll.addEventListener('scroll', handleTableScroll);
+
+        return () => {
+            window.removeEventListener('resize', syncWidth);
+            topScroll.removeEventListener('scroll', handleTopScroll);
+            tableScroll.removeEventListener('scroll', handleTableScroll);
+        };
+    }, [activeSection, filteredUsers, currentPage]); // Re-run when table content changes
 
     if (loading) return <div className={styles.loading}>Loading Admin Dashboard...</div>;
 
@@ -562,7 +618,16 @@ export default function AdminDashboard() {
                             </select>
                             <button className={styles.primaryBtn}><FaPlus /> Add User</button>
                         </div>
-                        <div className={styles.tableResponsive}>
+                        {/* Top Scrollbar */}
+                        <div
+                            ref={topScrollRef}
+                            className={styles.topScroll}
+                            style={{ overflowX: 'auto', marginBottom: '10px' }}
+                        >
+                            <div style={{ width: tableScrollRef.current?.scrollWidth || '100%', height: '1px' }}></div>
+                        </div>
+
+                        <div className={styles.tableResponsive} ref={tableScrollRef}>
                             <table className={styles.dataTable}>
                                 <thead>
                                     <tr>
@@ -596,7 +661,7 @@ export default function AdminDashboard() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredUsers.map(user => (
+                                    {filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(user => (
                                         <tr key={user.id}>
                                             <td>{user.member_id || '-'}</td>
                                             <td>{user.full_name}</td>
@@ -639,6 +704,29 @@ export default function AdminDashboard() {
                                 </tbody>
                             </table>
                         </div>
+
+                        {/* Pagination Controls */}
+                        {filteredUsers.length > itemsPerPage && (
+                            <div className={styles.pagination}>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className={styles.pageBtn}
+                                >
+                                    Previous
+                                </button>
+                                <span className={styles.pageInfo}>
+                                    Page {currentPage} of {Math.ceil(filteredUsers.length / itemsPerPage)}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredUsers.length / itemsPerPage)))}
+                                    disabled={currentPage === Math.ceil(filteredUsers.length / itemsPerPage)}
+                                    className={styles.pageBtn}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 

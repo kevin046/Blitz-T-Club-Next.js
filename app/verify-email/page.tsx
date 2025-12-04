@@ -1,101 +1,133 @@
-
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase/client';
 import { FaCheckCircle, FaTimesCircle, FaSpinner } from 'react-icons/fa';
 import styles from './verify.module.css';
 
-function VerifyContent() {
-    const searchParams = useSearchParams();
+export default function VerifyEmail() {
     const router = useRouter();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [message, setMessage] = useState('Verifying your email...');
 
     useEffect(() => {
-        const token = searchParams.get('token');
-        const email = searchParams.get('email'); // For display purposes if token is missing
-
-        if (!token) {
-            if (email) {
-                setStatus('loading');
-                setMessage(`Please check your email (${email}) for the verification link.`);
-                return;
-            }
-            setStatus('error');
-            setMessage('Invalid verification link. Please check your email and try again.');
-            return;
-        }
-
-        const verifyEmail = async () => {
+        const handleEmailVerification = async () => {
             try {
-                const response = await fetch('/api/verify-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token }),
-                });
+                // Check if we have a session from the verification link
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-                const data = await response.json();
+                if (sessionError) {
+                    console.error('Session error:', sessionError);
+                    throw new Error('Failed to verify session');
+                }
 
-                if (!response.ok) {
-                    throw new Error(data.error || 'Verification failed');
+                if (!session) {
+                    // Check URL hash for token (Supabase redirects with hash)
+                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                    const accessToken = hashParams.get('access_token');
+                    const refreshToken = hashParams.get('refresh_token');
+                    const error = hashParams.get('error');
+                    const errorCode = hashParams.get('error_code');
+                    const errorDescription = hashParams.get('error_description');
+
+                    // Handle errors from Supabase
+                    if (error || errorCode) {
+                        console.error('Auth error from URL:', { error, errorCode, errorDescription });
+
+                        // Redirect to error page
+                        const errorParams = new URLSearchParams();
+                        if (error) errorParams.set('error', error);
+                        if (errorCode) errorParams.set('error_code', errorCode);
+                        if (errorDescription) errorParams.set('error_description', errorDescription);
+
+                        router.push(`/auth/error?${errorParams.toString()}`);
+                        return;
+                    }
+
+                    // If we have tokens in the hash, set the session
+                    if (accessToken && refreshToken) {
+                        const { error: setSessionError } = await supabase.auth.setSession({
+                            access_token: accessToken,
+                            refresh_token: refreshToken,
+                        });
+
+                        if (setSessionError) {
+                            throw setSessionError;
+                        }
+                    } else {
+                        throw new Error('No session found. Please click the verification link in your email.');
+                    }
+                }
+
+                // Get the current user
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+                if (userError || !user) {
+                    throw new Error('Failed to get user information');
+                }
+
+                // Update membership status to active
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({
+                        membership_status: 'active',
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', user.id);
+
+                if (updateError) {
+                    console.error('Update error:', updateError);
+                    // Don't throw - verification still succeeded
                 }
 
                 setStatus('success');
-                setMessage('Your email has been verified successfully! You can now log in.');
+                setMessage('✅ Your email has been verified successfully! Redirecting to dashboard...');
 
-                // Redirect to login after 3 seconds
+                // Redirect to dashboard after 2 seconds
                 setTimeout(() => {
-                    router.push('/login');
-                }, 3000);
+                    router.push('/dashboard');
+                }, 2000);
+
             } catch (error: any) {
+                console.error('Verification error:', error);
                 setStatus('error');
-                setMessage(error.message);
+                setMessage(error.message || 'Verification failed. Please try again or contact support.');
             }
         };
 
-        verifyEmail();
-    }, [searchParams, router]);
+        handleEmailVerification();
+    }, [router]);
 
-    return (
-        <div className={styles.verifyBox}>
-            <div className={styles.iconWrapper}>
-                {status === 'loading' && <FaSpinner className={`${styles.icon} ${styles.spin}`} />}
-                {status === 'success' && <FaCheckCircle className={`${styles.icon} ${styles.success}`} />}
-                {status === 'error' && <FaTimesCircle className={`${styles.icon} ${styles.error}`} />}
-            </div>
-
-            <h2>
-                {status === 'loading' && 'Verifying...'}
-                {status === 'success' && 'Verified!'}
-                {status === 'error' && 'Verification Failed'}
-            </h2>
-
-            <p>{message}</p>
-
-            {status === 'success' && (
-                <Link href="/login" className={styles.btn}>
-                    Go to Login
-                </Link>
-            )}
-
-            {status === 'error' && (
-                <Link href="/contact" className={styles.btn}>
-                    Contact Support
-                </Link>
-            )}
-        </div>
-    );
-}
-
-export default function VerifyEmail() {
     return (
         <div className={styles.verifyPage}>
             <div className={styles.verifyContainer}>
-                <Suspense fallback={<div>Loading...</div>}>
-                    <VerifyContent />
-                </Suspense>
+                <div className={styles.verifyBox}>
+                    <div className={styles.iconWrapper}>
+                        {status === 'loading' && <FaSpinner className={`${styles.icon} ${styles.spin}`} />}
+                        {status === 'success' && <FaCheckCircle className={`${styles.icon} ${styles.success}`} />}
+                        {status === 'error' && <FaTimesCircle className={`${styles.icon} ${styles.error}`} />}
+                    </div>
+
+                    <h2>
+                        {status === 'loading' && 'Verifying Your Email...'}
+                        {status === 'success' && 'Email Verified!'}
+                        {status === 'error' && 'Verification Failed'}
+                    </h2>
+
+                    <p>{message}</p>
+
+                    {status === 'error' && (
+                        <div className={styles.actions}>
+                            <button onClick={() => router.push('/login')} className={styles.btn}>
+                                Go to Login
+                            </button>
+                            <button onClick={() => router.push('/register')} className={styles.btn}>
+                                Register Again
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

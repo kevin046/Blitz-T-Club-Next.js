@@ -163,28 +163,43 @@ export default function ProfileSettings() {
             // Get vehicle models for backward compatibility with car_models field
             const vehicleModels = vehicles.map(v => v.model);
 
+            // Only update fields that we know exist
+            const updateData: any = {
+                full_name: formData.full_name,
+                phone: formData.phone,
+                date_of_birth: formData.date_of_birth,
+                street: formData.street,
+                city: formData.city,
+                province: formData.province,
+                postal_code: formData.postal_code,
+            };
+
+            // Add car_models if we have vehicles
+            if (vehicleModels.length > 0) {
+                updateData.car_models = vehicleModels;
+            }
+
+            // Try to add full_address if it exists
+            try {
+                updateData.full_address = `${formData.street}, ${formData.city}, ${formData.province} ${formData.postal_code}`;
+            } catch (e) {
+                console.log('full_address field may not exist');
+            }
+
             const { error: updateError } = await supabase
                 .from('profiles')
-                .update({
-                    full_name: formData.full_name,
-                    phone: formData.phone,
-                    date_of_birth: formData.date_of_birth,
-                    street: formData.street,
-                    city: formData.city,
-                    province: formData.province,
-                    postal_code: formData.postal_code,
-                    car_models: vehicleModels,
-                    vehicle_model: vehicleModels[0] || '', // Keep first model for backward compatibility
-                    full_address: `${formData.street}, ${formData.city}, ${formData.province} ${formData.postal_code}`,
-                    updated_at: new Date().toISOString()
-                })
+                .update(updateData)
                 .eq('id', user.id);
 
-            if (updateError) throw updateError;
+            if (updateError) {
+                console.error('Update error:', updateError);
+                throw updateError;
+            }
 
             setSuccess(true);
             setTimeout(() => router.push('/dashboard'), 1500);
         } catch (err: any) {
+            console.error('Profile update failed:', err);
             setError(err.message || 'Failed to update profile');
         } finally {
             setLoading(false);

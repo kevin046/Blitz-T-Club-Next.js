@@ -40,8 +40,8 @@ export async function POST(request: Request) {
         // Determine redirect URL based on environment
         const isDev = process.env.NODE_ENV === 'development';
         const redirectUrl = isDev
-            ? 'http://localhost:3000/verify'
-            : 'https://www.blitztclub.com/verify';
+            ? 'http://localhost:3000/verify-email'
+            : 'https://www.blitztclub.com/verify-email';
 
         // Register with Supabase Auth - it will automatically send verification email
         const { data, error } = await supabaseAdmin.auth.signUp({
