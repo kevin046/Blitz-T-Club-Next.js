@@ -129,6 +129,39 @@ export async function POST(request: Request) {
             if (updateError) throw updateError;
         }
 
+        // Insert vehicles into the dedicated 'vehicles' table
+        if (carModels && carModels.length > 0) {
+            // First, delete any existing vehicles for this user to avoid duplicates if re-registering
+            await supabaseAdmin.from('vehicles').delete().eq('user_id', data.user.id);
+
+            const vehiclesToInsert = carModels.map((model: string) => ({
+                user_id: data.user.id,
+                model: model,
+                // If there's only one car, assign the license plate to it. 
+                // If multiple cars, we can't know which one it belongs to, so maybe leave blank or assign to first?
+                // For now, let's assign to the first one if available.
+                license_plate: licensePlate || '',
+                year: new Date().getFullYear(), // Default to current year or maybe null if allowed
+                color: 'Unknown' // Default
+            }));
+
+            // If multiple cars, only assign license plate to the first one to avoid duplicate unique constraint if any
+            if (vehiclesToInsert.length > 1 && licensePlate) {
+                for (let i = 1; i < vehiclesToInsert.length; i++) {
+                    vehiclesToInsert[i].license_plate = '';
+                }
+            }
+
+            const { error: vehiclesError } = await supabaseAdmin
+                .from('vehicles')
+                .insert(vehiclesToInsert);
+
+            if (vehiclesError) {
+                console.error('Error inserting vehicles:', vehiclesError);
+                // Don't fail registration if vehicle insert fails, just log it
+            }
+        }
+
         return NextResponse.json({
             message: 'Registration successful! Please check your email to verify your account.',
             userId: data.user.id,
