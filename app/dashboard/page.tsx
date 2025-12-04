@@ -22,10 +22,10 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 minHeight: '100vh',
                 background: 'var(--color-background)',
                 color: 'var(--color-text-primary)'
@@ -57,6 +57,26 @@ export default function Dashboard() {
                             <span className={styles.usernameLabel}>Username:</span>
                             <span id="userUsername">@{profile?.username || 'loading...'}</span>
                         </p>
+                        <p className={styles.usernameDisplay}>
+                            <span className={styles.usernameLabel}>Email:</span>
+                            <span>{user?.email || 'loading...'}</span>
+                        </p>
+                        <p className={styles.usernameDisplay}>
+                            <span className={styles.usernameLabel}>Member ID:</span>
+                            <span>{profile?.member_id || 'loading...'}</span>
+                        </p>
+                        {profile?.date_of_birth && (
+                            <p className={styles.usernameDisplay}>
+                                <span className={styles.usernameLabel}>Date of Birth:</span>
+                                <span>{new Date(profile.date_of_birth).toLocaleDateString()}</span>
+                            </p>
+                        )}
+                        {profile?.phone && (
+                            <p className={styles.usernameDisplay}>
+                                <span className={styles.usernameLabel}>Phone:</span>
+                                <span>{profile.phone}</span>
+                            </p>
+                        )}
                         <div className={styles.statusIndicators}>
                             <div className={styles.statusItem}>
                                 <span className={styles.statusText}>{profile?.membership_type === 'premium' ? 'Premium Member' : 'Standard Member'}</span>

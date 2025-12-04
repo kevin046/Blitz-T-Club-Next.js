@@ -15,6 +15,7 @@ interface UserProfile {
     role?: string;
     created_at: string;
     phone?: string;
+    date_of_birth?: string;
     full_address?: string;
     street?: string;
     city?: string;
