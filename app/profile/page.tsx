@@ -23,6 +23,7 @@ export default function ProfileSettings() {
         city: '',
         province: '',
         postal_code: '',
+        license_plate: '',
     });
 
     const [carModels, setCarModels] = useState<string[]>([]);
@@ -39,6 +40,7 @@ export default function ProfileSettings() {
                 city: profile.city || '',
                 province: profile.province || '',
                 postal_code: profile.postal_code || '',
+                license_plate: profile.license_plate || '',
             });
 
             // Set car models from profile
@@ -94,6 +96,7 @@ export default function ProfileSettings() {
                     city: formData.city,
                     province: formData.province,
                     postal_code: formData.postal_code,
+                    license_plate: formData.license_plate,
                     car_models: carModels,
                     vehicle_model: carModels[0] || '', // Keep first model for backward compatibility
                     full_address: `${formData.street}, ${formData.city}, ${formData.province} ${formData.postal_code}`,
@@ -264,6 +267,24 @@ export default function ProfileSettings() {
                     {/* Vehicle Information */}
                     <div className={styles.section}>
                         <h2><FaCar /> Vehicle Information</h2>
+
+                        <div className={styles.formGrid} style={{ marginBottom: '20px' }}>
+                            <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+                                <label htmlFor="license_plate">License Plate Number</label>
+                                <input
+                                    type="text"
+                                    id="license_plate"
+                                    name="license_plate"
+                                    value={formData.license_plate}
+                                    onChange={handleChange}
+                                    placeholder="Enter your vehicle license plate"
+                                    style={{ textTransform: 'uppercase' }}
+                                />
+                                <small style={{ color: 'var(--text-secondary)', marginTop: '4px', display: 'block' }}>
+                                    Helps us identify your car during events like lightshows.
+                                </small>
+                            </div>
+                        </div>
 
                         {/* Current Vehicles */}
                         {carModels.length > 0 && (

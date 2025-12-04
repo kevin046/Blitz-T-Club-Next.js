@@ -28,6 +28,7 @@ export default function Register() {
         postalCode: '',
         password: '',
         confirmPassword: '',
+        licensePlate: '',
         terms: false,
     });
 
@@ -107,6 +108,7 @@ export default function Register() {
                     phoneNumber: formData.phoneNumber,
                     dateOfBirth: formData.dateOfBirth,
                     carModels: formData.carModels,
+                    licensePlate: formData.licensePlate,
                     address: {
                         street: formData.street,
                         city: formData.city,
@@ -227,6 +229,22 @@ export default function Register() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label htmlFor="licensePlate"><FaCar /> License Plate Number (Optional)</label>
+                            <input
+                                type="text"
+                                id="licensePlate"
+                                name="licensePlate"
+                                value={formData.licensePlate}
+                                onChange={handleInputChange}
+                                placeholder="Enter your vehicle license plate"
+                                style={{ textTransform: 'uppercase' }}
+                            />
+                            <small style={{ color: 'var(--text-secondary)', marginTop: '4px', display: 'block' }}>
+                                Helps us identify your car during events like lightshows.
+                            </small>
                         </div>
 
                         {/* Address Info */}

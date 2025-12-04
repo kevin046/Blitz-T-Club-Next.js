@@ -18,6 +18,7 @@ interface Profile {
     car_model?: string;
     car_models?: string;
     vehicle_model?: string;
+    license_plate?: string;
 }
 
 interface EditUserModalProps {
@@ -36,8 +37,8 @@ export default function EditUserModal({ user, isOpen, onClose, onSave }: EditUse
             setFormData({
                 ...user,
                 // Normalize DOB field for input
-                date_of_birth: user.date_of_birth ? new Date(user.date_of_birth).toISOString().split('T')[0] : 
-                               user.dob ? new Date(user.dob).toISOString().split('T')[0] : ''
+                date_of_birth: user.date_of_birth ? new Date(user.date_of_birth).toISOString().split('T')[0] :
+                    user.dob ? new Date(user.dob).toISOString().split('T')[0] : ''
             });
         }
     }, [user]);
@@ -135,6 +136,17 @@ export default function EditUserModal({ user, isOpen, onClose, onSave }: EditUse
                             value={formData.car_models || formData.car_model || formData.vehicle_model || ''}
                             onChange={handleChange}
                             placeholder="Model 3, Model Y..."
+                        />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label>License Plate</label>
+                        <input
+                            type="text"
+                            name="license_plate"
+                            value={formData.license_plate || ''}
+                            onChange={handleChange}
+                            placeholder="ABC 123"
+                            style={{ textTransform: 'uppercase' }}
                         />
                     </div>
                     <div className={styles.formRow}>

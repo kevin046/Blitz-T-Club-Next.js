@@ -11,7 +11,7 @@ const getSupabaseAdmin = () => createClient(
 export async function POST(request: Request) {
     try {
         const supabaseAdmin = getSupabaseAdmin();
-        const { email, password, fullName, username, phoneNumber, dateOfBirth, carModels, address } = await request.json();
+        const { email, password, fullName, username, phoneNumber, dateOfBirth, carModels, licensePlate, address } = await request.json();
 
         // Generate Member ID - Find first unused number
         const { data: allMembers } = await supabaseAdmin
@@ -55,6 +55,7 @@ export async function POST(request: Request) {
                     phone: phoneNumber,
                     date_of_birth: dateOfBirth,
                     car_models: carModels,
+                    license_plate: licensePlate,
                     street: address?.street,
                     city: address?.city,
                     province: address?.province,
@@ -89,6 +90,7 @@ export async function POST(request: Request) {
                         phone: phoneNumber,
                         date_of_birth: dateOfBirth,
                         car_models: carModels,
+                        license_plate: licensePlate,
                         street: address?.street,
                         city: address?.city,
                         province: address?.province,
@@ -110,6 +112,7 @@ export async function POST(request: Request) {
                     phone: phoneNumber,
                     date_of_birth: dateOfBirth,
                     car_models: carModels,
+                    license_plate: licensePlate,
                     street: address?.street,
                     city: address?.city,
                     province: address?.province,

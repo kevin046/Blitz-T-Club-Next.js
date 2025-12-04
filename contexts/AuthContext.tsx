@@ -22,6 +22,7 @@ interface UserProfile {
     province?: string;
     postal_code?: string;
     vehicle_model?: string;
+    license_plate?: string;
 }
 
 interface AuthContextType {
