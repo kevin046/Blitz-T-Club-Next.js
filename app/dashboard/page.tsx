@@ -68,7 +68,7 @@ export default function Dashboard() {
                         {profile?.date_of_birth && (
                             <p className={styles.usernameDisplay}>
                                 <span className={styles.usernameLabel}>Date of Birth:</span>
-                                <span>{new Date(profile.date_of_birth).toLocaleDateString()}</span>
+                                <span>{new Date(profile.date_of_birth + 'T12:00:00Z').toLocaleDateString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                             </p>
                         )}
                         {profile?.phone && (
