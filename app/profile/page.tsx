@@ -41,16 +41,63 @@ export default function ProfileSettings() {
     const fetchVehicles = async () => {
         if (!user) return;
 
-        const { data, error } = await supabase
-            .from('vehicles')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: true });
+        try {
+            // 1. Try to get vehicles from the dedicated table
+            const { data: vehiclesData, error: vehiclesError } = await supabase
+                .from('vehicles')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: true });
 
-        if (error) {
-            console.error('Error fetching vehicles:', error);
-        } else if (data) {
-            setVehicles(data);
+            if (vehiclesError) throw vehiclesError;
+
+            // 2. If vehicles found, use them
+            if (vehiclesData && vehiclesData.length > 0) {
+                setVehicles(vehiclesData);
+            }
+            // 3. If NO vehicles found, check legacy profile data and migrate it
+            else {
+                console.log('No vehicles in table, checking legacy profile data...');
+                const { data: profileData, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('car_models, license_plate')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profileError) {
+                    console.error('Error fetching profile:', profileError);
+                    return;
+                }
+
+                if (profileData?.car_models && profileData.car_models.length > 0) {
+                    // Prepare vehicles to insert
+                    const vehiclesToInsert = profileData.car_models.map((model: string, index: number) => ({
+                        user_id: user.id,
+                        model: model,
+                        // Assign license plate to the first car only
+                        license_plate: (index === 0 && profileData.license_plate) ? profileData.license_plate : '',
+                        year: new Date().getFullYear(),
+                        color: 'Unknown'
+                    }));
+
+                    console.log('Migrating legacy vehicles:', vehiclesToInsert);
+
+                    // Insert into vehicles table
+                    const { data: newVehicles, error: insertError } = await supabase
+                        .from('vehicles')
+                        .insert(vehiclesToInsert)
+                        .select();
+
+                    if (insertError) {
+                        console.error('Error migrating vehicles:', insertError);
+                    } else if (newVehicles) {
+                        setVehicles(newVehicles);
+                        console.log('Migration successful!');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error in fetchVehicles:', error);
         }
     };
 
