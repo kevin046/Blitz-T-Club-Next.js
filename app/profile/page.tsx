@@ -16,14 +16,39 @@ export default function ProfileSettings() {
 
     // Form state
     const [formData, setFormData] = useState({
-        full_name: profile?.full_name || '',
-        phone: profile?.phone || '',
-        street: profile?.street || '',
-        city: profile?.city || '',
-        province: profile?.province || '',
-        postal_code: profile?.postal_code || '',
-        vehicle_model: profile?.vehicle_model || '',
+        full_name: '',
+        phone: '',
+        date_of_birth: '',
+        street: '',
+        city: '',
+        province: '',
+        postal_code: '',
     });
+
+    const [carModels, setCarModels] = useState<string[]>([]);
+    const [newCarModel, setNewCarModel] = useState('');
+
+    // Populate form data when profile loads
+    useEffect(() => {
+        if (profile) {
+            setFormData({
+                full_name: profile.full_name || '',
+                phone: profile.phone || '',
+                date_of_birth: profile.date_of_birth || '',
+                street: profile.street || '',
+                city: profile.city || '',
+                province: profile.province || '',
+                postal_code: profile.postal_code || '',
+            });
+
+            // Set car models from profile
+            if (profile.car_models && profile.car_models.length > 0) {
+                setCarModels(profile.car_models);
+            } else if (profile.vehicle_model) {
+                setCarModels([profile.vehicle_model]);
+            }
+        }
+    }, [profile]);
 
     // Redirect if not authenticated
     useEffect(() => {
@@ -37,6 +62,17 @@ export default function ProfileSettings() {
             ...formData,
             [e.target.name]: e.target.value
         });
+    };
+
+    const handleAddCarModel = () => {
+        if (newCarModel && !carModels.includes(newCarModel)) {
+            setCarModels([...carModels, newCarModel]);
+            setNewCarModel('');
+        }
+    };
+
+    const handleRemoveCarModel = (model: string) => {
+        setCarModels(carModels.filter(m => m !== model));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -53,11 +89,13 @@ export default function ProfileSettings() {
                 .update({
                     full_name: formData.full_name,
                     phone: formData.phone,
+                    date_of_birth: formData.date_of_birth,
                     street: formData.street,
                     city: formData.city,
                     province: formData.province,
                     postal_code: formData.postal_code,
-                    vehicle_model: formData.vehicle_model,
+                    car_models: carModels,
+                    vehicle_model: carModels[0] || '', // Keep first model for backward compatibility
                     full_address: `${formData.street}, ${formData.city}, ${formData.province} ${formData.postal_code}`,
                     updated_at: new Date().toISOString()
                 })
@@ -74,7 +112,6 @@ export default function ProfileSettings() {
         }
     };
 
-    // Redirect if not logged in (use useEffect to avoid render-time navigation)
     // Redirect if not logged in (use useEffect to avoid render-time navigation)
     if (authLoading) return <div className={styles.settingsPage}><div className={styles.container}>Loading...</div></div>;
 
@@ -139,6 +176,18 @@ export default function ProfileSettings() {
                                     onChange={handleChange}
                                     required
                                     placeholder="(123) 456-7890"
+                                />
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="date_of_birth">Date of Birth</label>
+                                <input
+                                    type="date"
+                                    id="date_of_birth"
+                                    name="date_of_birth"
+                                    value={formData.date_of_birth}
+                                    onChange={handleChange}
+                                    placeholder="YYYY-MM-DD"
                                 />
                             </div>
                         </div>
@@ -215,24 +264,57 @@ export default function ProfileSettings() {
                     {/* Vehicle Information */}
                     <div className={styles.section}>
                         <h2><FaCar /> Vehicle Information</h2>
+
+                        {/* Current Vehicles */}
+                        {carModels.length > 0 && (
+                            <div className={styles.currentVehicles}>
+                                <h3>Your Tesla Vehicles:</h3>
+                                <div className={styles.vehiclesList}>
+                                    {carModels.map((model, index) => (
+                                        <div key={index} className={styles.vehicleItem}>
+                                            <span><FaCar /> {model}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveCarModel(model)}
+                                                className={styles.removeBtn}
+                                                title="Remove vehicle"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Add New Vehicle */}
                         <div className={styles.formGrid}>
                             <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
-                                <label htmlFor="vehicle_model">Tesla Model *</label>
-                                <select
-                                    id="vehicle_model"
-                                    name="vehicle_model"
-                                    value={formData.vehicle_model}
-                                    onChange={handleChange}
-                                    required
-                                >
-                                    <option value="">Select Model</option>
-                                    <option value="Model S">Model S</option>
-                                    <option value="Model 3">Model 3</option>
-                                    <option value="Model X">Model X</option>
-                                    <option value="Model Y">Model Y</option>
-                                    <option value="Cybertruck">Cybertruck</option>
-                                    <option value="Roadster">Roadster</option>
-                                </select>
+                                <label htmlFor="new_vehicle_model">Add Tesla Model</label>
+                                <div className={styles.addVehicleContainer}>
+                                    <select
+                                        id="new_vehicle_model"
+                                        value={newCarModel}
+                                        onChange={(e) => setNewCarModel(e.target.value)}
+                                        className={styles.vehicleSelect}
+                                    >
+                                        <option value="">Select Model to Add</option>
+                                        <option value="Model S">Model S</option>
+                                        <option value="Model 3">Model 3</option>
+                                        <option value="Model X">Model X</option>
+                                        <option value="Model Y">Model Y</option>
+                                        <option value="Cybertruck">Cybertruck</option>
+                                        <option value="Roadster">Roadster</option>
+                                    </select>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddCarModel}
+                                        className={styles.addBtn}
+                                        disabled={!newCarModel || carModels.includes(newCarModel)}
+                                    >
+                                        Add Vehicle
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
