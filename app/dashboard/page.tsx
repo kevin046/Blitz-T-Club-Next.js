@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { FaUser, FaIdCard, FaCalendarAlt, FaShoppingBag, FaCog, FaSignOutAlt, FaCar, FaMapMarkerAlt, FaEdit, FaExclamationTriangle, FaUserShield, FaStore, FaUsers, FaTachometerAlt, FaSpinner } from 'react-icons/fa';
 import MembershipCard from '@/components/MembershipCard';
 import DynamicJotformAI from '@/components/DynamicJotformAI';
+import EmailVerificationScreen from './EmailVerificationScreen';
 import styles from './dashboard.module.css';
 
 export default function Dashboard() {
@@ -39,6 +40,11 @@ export default function Dashboard() {
     }
 
     if (!user) return null;
+
+    // If user email not verified, show ONLY verification screen
+    if (!user.email_confirmed_at) {
+        return <EmailVerificationScreen userEmail={user.email!} onSignOut={signOut} />;
+    }
 
     // Show dashboard immediately, even if profile is still loading
 
