@@ -302,8 +302,10 @@ export default function AdminDashboard() {
         try {
             const data = await fetchWithAuth('/api/admin/scan-logs');
             setScanLogs(data || []);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching scan logs:', error);
+            // Don't set error state, just use empty array - table may not exist yet
+            setScanLogs([]);
         }
     };
 
@@ -707,14 +709,13 @@ export default function AdminDashboard() {
                                         <th>Member Name</th>
                                         <th>Member ID</th>
                                         <th>Email</th>
-                                        <th>Scan Type</th>
                                         <th>Vendor</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {scanLogs.length > 0 ? scanLogs.map(log => (
                                         <tr key={log.id}>
-                                            <td>{new Date(log.scanned_at).toLocaleString('en-US', {
+                                            <td>{new Date(log.created_at).toLocaleString('en-US', {
                                                 timeZone: 'America/New_York',
                                                 month: 'short',
                                                 day: 'numeric',
@@ -724,18 +725,17 @@ export default function AdminDashboard() {
                                                 hour12: true
                                             })}</td>
                                             <td>{log.profiles?.full_name || '-'}</td>
-                                            <td style={{ fontFamily: 'monospace' }}>{log.profiles?.member_id || '-'}</td>
+                                            <td style={{ fontFamily: 'monospace' }}>{log.member_id_string || '-'}</td>
                                             <td>{log.profiles?.email || '-'}</td>
                                             <td>
                                                 <span className={`${styles.statusBadge} ${styles.active}`}>
-                                                    {log.scan_type.replace('_', ' ')}
+                                                    {log.vendor_id || '-'}
                                                 </span>
                                             </td>
-                                            <td>{log.vendors?.name || '-'}</td>
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>
+                                            <td colSpan={5} style={{ textAlign: 'center', padding: '2rem' }}>
                                                 No scan history available
                                             </td>
                                         </tr>

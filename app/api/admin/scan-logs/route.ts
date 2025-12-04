@@ -34,37 +34,40 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
         }
 
-        // Fetch scan logs with member details
+        // Fetch scan logs from existing qr_code_scans table
         const { data: scanLogs, error } = await supabase
-            .from('qr_scan_logs')
+            .from('qr_code_scans')
             .select(`
                 id,
+                created_at,
                 member_id,
-                scanned_at,
-                scan_type,
-                user_agent,
                 vendor_id,
-                additional_data,
-                profiles:member_id (
+                member_id_string,
+                device_info,
+                profiles!member_id (
                     full_name,
-                    member_id,
                     email
-                ),
-                vendors:vendor_id (
-                    name
                 )
             `)
-            .order('scanned_at', { ascending: false })
+            .order('created_at', { ascending: false })
             .limit(100);
 
         if (error) {
             console.error('Error fetching scan logs:', error);
+            // If table doesn't exist yet, return empty array instead of error
+            if (error.message?.includes('relation') || error.message?.includes('does not exist')) {
+                return NextResponse.json([]);
+            }
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
         return NextResponse.json(scanLogs || []);
     } catch (error: any) {
         console.error('Server error:', error);
+        // Return empty array if table doesn't exist
+        if (error.message?.includes('relation') || error.message?.includes('does not exist')) {
+            return NextResponse.json([]);
+        }
         return NextResponse.json(
             { error: error.message || 'Internal server error' },
             { status: 500 }

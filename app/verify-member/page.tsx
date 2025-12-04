@@ -57,15 +57,11 @@ function VerifyMemberContent() {
 
                     // Log the QR scan
                     try {
-                        await supabase.from('qr_scan_logs').insert({
+                        await supabase.from('qr_code_scans').insert({
                             member_id: data.id,
-                            scanned_at: new Date().toISOString(),
-                            scan_type: 'member_verification',
-                            user_agent: navigator.userAgent,
-                            additional_data: {
-                                member_name: data.full_name,
-                                member_id_display: data.member_id
-                            }
+                            member_id_string: data.member_id,
+                            vendor_id: null,
+                            device_info: navigator.userAgent
                         });
                     } catch (logError) {
                         console.error('Failed to log scan:', logError);
